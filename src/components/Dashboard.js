@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTheme } from '@material-ui/core/styles'
-import { Grid, Paper } from '@material-ui/core'
+import { Container, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 
@@ -24,13 +24,11 @@ export default function Dashboard() {
 
   return (
     <React.Fragment>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8} lg={7}>
-          <Paper className={fixedHeightPaper}>
-            <ProgramGraphs />
-          </Paper>
-        </Grid>
-      </Grid>
+      <Container>
+        <Paper className={fixedHeightPaper}>
+          <ProgramGraphs />
+        </Paper>
+      </Container>
     </React.Fragment>
   )
 }
