@@ -25,19 +25,19 @@ const NeoGraph = (props) => {
       labels: {
         Course: {
           caption: 'name',
-          title_properties: ['name'],
+          title_properties: ['id', 'name', 'units'],
         },
         Program: {
           caption: 'name',
-          title_properties: ['name'],
+          title_properties: ['id', 'name', 'units'],
         },
         Specialisation: {
           caption: 'name',
-          title_properties: ['name'],
+          title_properties: ['id', 'name'],
         },
         Requirement: {
           caption: 'units',
-          title_properties: ['units'],
+          title_properties: ['units', 'description'],
         },
       },
       relationships: {
@@ -45,7 +45,7 @@ const NeoGraph = (props) => {
           caption: true,
         },
       },
-      initial_cypher: `MATCH p=(:Program {id:"BATAN}"})-[:REQUIREMENT*]->(:Requirement)-[:REQUIREMENT*1..]->() RETURN p`,
+      initial_cypher: `MATCH p=(:Program {name: 'Master of Machine Learning and Computer Vision'})-[r:REQUIREMENT*1..]->() RETURN p`,
     }
     const vis = new Neovis(config)
     vis.render()

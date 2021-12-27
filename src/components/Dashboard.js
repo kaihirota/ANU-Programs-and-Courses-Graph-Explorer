@@ -18,12 +18,9 @@ export default function Dashboard() {
       overflow: 'auto',
       flexDirection: 'column',
     },
-    fixedHeight: {
-      height: 240,
-    },
   }))
   const classes = useStyles(theme)
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
+  const fixedHeightPaper = clsx(classes.paper)
 
   return (
     <React.Fragment>

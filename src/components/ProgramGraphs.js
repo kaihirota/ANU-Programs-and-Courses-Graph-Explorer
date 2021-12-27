@@ -50,13 +50,6 @@ export default function ProgramGraphs() {
         neo4jUser={server_user}
         neo4jPassword={server_password}
       />
-      <ResponsiveNeoGraph
-        containerId={'id1'}
-        neo4jUri={server_url}
-        neo4jUser={server_user}
-        neo4jPassword={server_password}
-        backgroundColor={'#545454'}
-      />
     </React.Fragment>
   )
 }
