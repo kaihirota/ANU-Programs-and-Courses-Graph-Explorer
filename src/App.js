@@ -2,8 +2,6 @@ import React from 'react'
 
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
 
-import UserList from './components/UserList'
-
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -27,16 +25,19 @@ import {
   ChevronLeft as ChevronLeftIcon,
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
-  People as PeopleIcon,
 } from '@material-ui/icons'
 import Dashboard from './components/Dashboard'
+import dotenv from 'dotenv'
+
+// set environment variables from .env
+dotenv.config()
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <MUILink color="inherit" href="https://grandstack.io/">
-        Your GRANDstack App Name Here
+      <MUILink color="inherit" href="http://khirota.co/">
+        ANU Graphs
       </MUILink>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -202,15 +203,6 @@ export default function App() {
                 <ListItemText primary="Dashboard" />
               </ListItem>
             </Link>
-
-            <Link to="/users" className={classes.navLink}>
-              <ListItem button>
-                <ListItemIcon>
-                  <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary="Users" />
-              </ListItem>
-            </Link>
           </List>
           <Divider />
         </Drawer>
@@ -219,8 +211,6 @@ export default function App() {
           <Container maxWidth="lg" className={classes.container}>
             <Switch>
               <Route exact path="/" component={Dashboard} />
-              <Route exact path="/businesses" component={UserList} />
-              <Route exact path="/users" component={UserList} />
             </Switch>
 
             <Box pt={4}>
