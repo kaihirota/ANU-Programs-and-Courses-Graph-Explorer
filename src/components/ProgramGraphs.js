@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
 import Title from './Title'
+import CollapsibleTable from './CourseTable'
 import './graph.css'
 
 const CompletionEvent = 'completed'
@@ -97,6 +98,8 @@ export default function ProgramGraphs() {
         </div>
         <div id="graph-vis"></div>
       </div>
+      <Title>Courses</Title>
+      <CollapsibleTable></CollapsibleTable>
     </React.Fragment>
   )
 }
