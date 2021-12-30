@@ -8,6 +8,32 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 
+export function createRow(
+  id,
+  name,
+  units,
+  academic_career,
+  college,
+  course_convener
+) {
+  return {
+    id,
+    name,
+    units,
+    academic_career,
+    college,
+    course_convener,
+  }
+}
+
+const rows = [
+  createRow('COMP9999', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
+  createRow('COMP4499', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
+  createRow('COMP9449', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
+  createRow('COMP9900', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
+  createRow('COMP2100', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
+]
+
 function Row(props) {
   const { row } = props
   return (
@@ -43,33 +69,9 @@ Row.propTypes = {
   }).isRequired,
 }
 
-function createData(
-  id,
-  name,
-  units,
-  academic_career,
-  college,
-  course_convener
-) {
-  return {
-    id,
-    name,
-    units,
-    academic_career,
-    college,
-    course_convener,
-  }
-}
+export default function CourseTable(props) {
+  const { rows } = props
 
-const rows = [
-  createData('COMP9999', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createData('COMP4499', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createData('COMP9449', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createData('COMP9900', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createData('COMP2100', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-]
-
-export default function CollapsibleTable() {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -91,4 +93,11 @@ export default function CollapsibleTable() {
       </Table>
     </TableContainer>
   )
+}
+
+CourseTable.propTypes = {
+  rows: PropTypes.array.isRequired,
+}
+CourseTable.defaultProps = {
+  rows: rows,
 }

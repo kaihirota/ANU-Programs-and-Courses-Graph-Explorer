@@ -9,9 +9,12 @@ import {
 } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
 import Title from './Title'
-import CollapsibleTable from './CourseTable'
+import CourseTable from './CourseTable'
 import './graph.css'
 
+const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
+const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
+const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 const CompletionEvent = 'completed'
 const QUERY_GET_PROGRAMS = gql`
   {
@@ -21,9 +24,6 @@ const QUERY_GET_PROGRAMS = gql`
     }
   }
 `
-const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
-const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
-const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 
 export default function ProgramGraphs() {
   const [loading_curr, setLoading] = useState(false)
@@ -31,9 +31,7 @@ export default function ProgramGraphs() {
   if (error) return <p>Error</p>
   if (loading) return <p>Loading</p>
 
-  const handleChange = (e) => {
-    document.getElementById('graph-vis').innerHTML = ''
-    setLoading(true)
+  const drawGraph = (program_id) => {
     const config = {
       container_id: 'graph-vis',
       server_url: neo4jUri,
@@ -67,14 +65,20 @@ export default function ProgramGraphs() {
       hierarchical: false,
       //   hierarchical: true,
       //   hierarchical_sort_method: 'directed',
-      initial_cypher: `MATCH p=(:Program {id: '${e.target.value}'})-[r:REQUIREMENT*1..]->() RETURN p`,
+      initial_cypher: `MATCH p=(:Program {id: '${program_id}'})-[r:REQUIREMENT*1..]->() RETURN p`,
     }
 
+    document.getElementById('graph-vis').innerHTML = ''
+    setLoading(true)
     const vis = new Neovis(config)
     vis.registerOnEvent(CompletionEvent, () => {
       setLoading(false)
     })
     vis.render()
+  }
+
+  const handleChange = (e) => {
+    drawGraph(e.target.value)
   }
 
   return (
@@ -99,7 +103,7 @@ export default function ProgramGraphs() {
         <div id="graph-vis"></div>
       </div>
       <Title>Courses</Title>
-      <CollapsibleTable></CollapsibleTable>
+      <CourseTable></CourseTable>
     </React.Fragment>
   )
 }
