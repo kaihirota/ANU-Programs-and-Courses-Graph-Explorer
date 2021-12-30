@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { useQuery, gql } from '@apollo/client'
+import React, { useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import {
   CircularProgress,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
+  Select,
 } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
 import Title from './Title'

@@ -1,16 +1,16 @@
 import React from 'react'
-import { useQuery, gql } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { withStyles } from '@material-ui/core/styles'
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Tooltip,
-  Paper,
   TableSortLabel,
   TextField,
+  Tooltip,
 } from '@material-ui/core'
 
 import Title from './Title'

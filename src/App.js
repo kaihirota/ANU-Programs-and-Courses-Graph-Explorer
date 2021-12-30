@@ -1,30 +1,29 @@
 import React from 'react'
 
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import {
-  CssBaseline,
-  Drawer,
-  Box,
   AppBar,
-  Toolbar,
-  List,
-  Typography,
-  Divider,
-  IconButton,
+  Box,
   Container,
+  CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
   Link as MUILink,
+  List,
   ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
 } from '@material-ui/core'
-import { Link } from 'react-router-dom'
 import {
   ChevronLeft as ChevronLeftIcon,
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
+  Menu as MenuIcon,
 } from '@material-ui/icons'
 import Dashboard from './components/Dashboard'
 import dotenv from 'dotenv'

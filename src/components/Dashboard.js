@@ -1,10 +1,10 @@
 import React from 'react'
-import { useTheme } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { Container, Paper } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 
 import ProgramGraphs from './ProgramGraphs'
+
 export default function Dashboard() {
   const theme = useTheme()
 
