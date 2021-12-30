@@ -35,7 +35,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <MUILink color="inherit" href="http://khirota.co/">
+      <MUILink color="inherit" href="https://khirota.co/">
         ANU Graphs
       </MUILink>{' '}
       {new Date().getFullYear()}
