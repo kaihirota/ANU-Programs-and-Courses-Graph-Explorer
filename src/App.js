@@ -164,11 +164,6 @@ export default function App() {
             >
               <MenuIcon />
             </IconButton>
-            <img
-              className={classes.appBarImage}
-              src="img/grandstack.png"
-              alt="GRANDstack logo"
-            />
             <Typography
               component="h1"
               variant="h6"
@@ -176,7 +171,7 @@ export default function App() {
               noWrap
               className={classes.title}
             >
-              Welcome To GRANDstack App
+              ANU Programs and Courses Graph Explorer
             </Typography>
           </Toolbar>
         </AppBar>
