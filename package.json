@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "React app for ANU Graphs.",
   "dependencies": {
-    "@apollo/client": "^3.1.3",
+    "@apollo/client": "^3.5.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@material-ui/core": "^4.10.0",
