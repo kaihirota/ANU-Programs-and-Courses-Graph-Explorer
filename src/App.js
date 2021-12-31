@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 
@@ -27,6 +27,7 @@ import {
 } from '@material-ui/icons'
 import Dashboard from './components/Dashboard'
 import dotenv from 'dotenv'
+import UserContext from './UserContext'
 
 // set environment variables from .env
 dotenv.config()
@@ -143,6 +144,15 @@ export default function App() {
     setOpen(false)
   }
 
+  const saveUserContext = (values) => {
+    setUserContext(values)
+  }
+  const [userContext, setUserContext] = useState({
+    program: '',
+    coursesTaken: [],
+    saveUserContext: saveUserContext,
+  })
+
   return (
     <Router>
       <div className={classes.root}>
@@ -203,10 +213,11 @@ export default function App() {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Switch>
-              <Route exact path="/" component={Dashboard} />
-            </Switch>
-
+            <UserContext.Provider value={userContext}>
+              <Switch>
+                <Route exact path="/" component={Dashboard} />
+              </Switch>
+            </UserContext.Provider>
             <Box pt={4}>
               <Copyright />
             </Box>

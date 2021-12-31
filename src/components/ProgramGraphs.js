@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   CircularProgress,
   FormControl,
@@ -9,14 +9,15 @@ import {
 import Neovis from 'neovis.js/dist/neovis.js'
 import './graph.css'
 import PropTypes from 'prop-types'
+import UserContext from '../UserContext'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
 const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 const CompletionEvent = 'completed'
 
-export default function ProgramGraphs(props) {
-  const { programs } = props
+export default function ProgramGraphs() {
+  const user = useContext(UserContext)
   const [loading, setLoading] = useState(false)
 
   const drawGraph = (program_id) => {
@@ -65,24 +66,14 @@ export default function ProgramGraphs(props) {
     vis.render()
   }
 
-  const handleChange = (e) => {
-    drawGraph(e.target.value)
-  }
+  useEffect(() => {
+    if (user && user.program !== '') {
+      drawGraph(user.program)
+    }
+  }, [user])
 
   return (
     <React.Fragment>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
-        <Select label="Program Name" onChange={handleChange}>
-          {programs.map((program) => {
-            return (
-              <MenuItem key={program.id} value={program.id} name={program.name}>
-                {program.name}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </FormControl>
       <div className="graph-and-loading-icon-wrapper">
         <div className="loading-icon-wrapper">
           {loading && <CircularProgress size={100} />}
@@ -91,8 +82,4 @@ export default function ProgramGraphs(props) {
       </div>
     </React.Fragment>
   )
-}
-
-ProgramGraphs.propTypes = {
-  programs: PropTypes.array.isRequired,
 }

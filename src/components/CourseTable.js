@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { gql, useLazyQuery } from '@apollo/client'
+import UserContext from '../UserContext'
 
 function Row(props) {
   const { row } = props
@@ -46,7 +47,7 @@ Row.propTypes = {
 }
 
 export default function CourseTable(props) {
-  const { programs } = props
+  const user = useContext(UserContext)
   const QUERY_PROGRAM_CLASSES = gql`
     query programs($id: ID!) {
       programs(where: { id: $id }) {
@@ -66,43 +67,12 @@ export default function CourseTable(props) {
     QUERY_PROGRAM_CLASSES
   )
 
-  const handleChange = (e) => {
-    getClasses({ variables: { id: e.target.value } }).then((r) =>
-      console.log(r)
-    )
-  }
-
-  if (error || loading) {
-    return (
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
-        <Select label="Program Name" onChange={handleChange}>
-          {programs.map((program) => {
-            return (
-              <MenuItem key={program.id} value={program.id} name={program.name}>
-                {program.name}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </FormControl>
-    )
-  }
+  useEffect(() => {
+    getClasses({ variables: { id: user.program } }).then((r) => console.log(r))
+  }, [user])
 
   return (
     <React.Fragment>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
-        <Select label="Program Name" onChange={handleChange}>
-          {programs.map((program) => {
-            return (
-              <MenuItem key={program.id} value={program.id} name={program.name}>
-                {program.name}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </FormControl>
       {!loading && !error && (
         <TableContainer component={Paper}>
           <Table aria-label="collapsible table">
@@ -117,8 +87,9 @@ export default function CourseTable(props) {
               </TableRow>
             </TableHead>
             <TableBody>
+              {console.log(data)}
               {data &&
-                data.programs &&
+                data.programs.length > 0 &&
                 data.programs[0].classes.map((row) => (
                   <Row key={row.id} row={row} />
                 ))}
@@ -128,8 +99,4 @@ export default function CourseTable(props) {
       )}
     </React.Fragment>
   )
-}
-
-CourseTable.propTypes = {
-  programs: PropTypes.array.isRequired,
 }
