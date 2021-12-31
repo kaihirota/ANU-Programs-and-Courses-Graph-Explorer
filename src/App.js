@@ -1,42 +1,43 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
-
-import UserList from './components/UserList'
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import {
-  CssBaseline,
-  Drawer,
-  Box,
   AppBar,
-  Toolbar,
-  List,
-  Typography,
-  Divider,
-  IconButton,
+  Box,
   Container,
+  CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
   Link as MUILink,
+  List,
   ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
 } from '@material-ui/core'
-import { Link } from 'react-router-dom'
 import {
   ChevronLeft as ChevronLeftIcon,
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
-  People as PeopleIcon,
+  Menu as MenuIcon,
 } from '@material-ui/icons'
 import Dashboard from './components/Dashboard'
+import dotenv from 'dotenv'
+import UserContext from './UserContext'
+
+// set environment variables from .env
+dotenv.config()
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <MUILink color="inherit" href="https://grandstack.io/">
-        Your GRANDstack App Name Here
+      <MUILink color="inherit" href="https://khirota.co/">
+        ANU Graphs
       </MUILink>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -143,6 +144,15 @@ export default function App() {
     setOpen(false)
   }
 
+  const saveUserContext = (values) => {
+    setUserContext(values)
+  }
+  const [userContext, setUserContext] = useState({
+    program: '',
+    coursesTaken: [],
+    saveUserContext: saveUserContext,
+  })
+
   return (
     <Router>
       <div className={classes.root}>
@@ -164,11 +174,6 @@ export default function App() {
             >
               <MenuIcon />
             </IconButton>
-            <img
-              className={classes.appBarImage}
-              src="img/grandstack.png"
-              alt="GRANDstack logo"
-            />
             <Typography
               component="h1"
               variant="h6"
@@ -176,7 +181,7 @@ export default function App() {
               noWrap
               className={classes.title}
             >
-              Welcome To GRANDstack App
+              ANU Programs and Courses Graph Explorer
             </Typography>
           </Toolbar>
         </AppBar>
@@ -202,27 +207,17 @@ export default function App() {
                 <ListItemText primary="Dashboard" />
               </ListItem>
             </Link>
-
-            <Link to="/users" className={classes.navLink}>
-              <ListItem button>
-                <ListItemIcon>
-                  <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary="Users" />
-              </ListItem>
-            </Link>
           </List>
           <Divider />
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Switch>
-              <Route exact path="/" component={Dashboard} />
-              <Route exact path="/businesses" component={UserList} />
-              <Route exact path="/users" component={UserList} />
-            </Switch>
-
+            <UserContext.Provider value={userContext}>
+              <Switch>
+                <Route exact path="/" component={Dashboard} />
+              </Switch>
+            </UserContext.Provider>
             <Box pt={4}>
               <Copyright />
             </Box>

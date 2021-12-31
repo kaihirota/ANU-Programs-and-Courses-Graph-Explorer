@@ -1,54 +1,85 @@
-import React from 'react'
-import { useTheme } from '@material-ui/core/styles'
-import { Grid, Paper } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useContext } from 'react'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import {
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+} from '@material-ui/core'
 import clsx from 'clsx'
 
-import RatingsChart from './RatingsChart'
-import UserCount from './UserCount'
-import RecentReviews from './RecentReviews'
+import ProgramGraphs from './ProgramGraphs'
+import CourseTable from './CourseTable'
+import { gql, useQuery } from '@apollo/client'
+import Title from './Title'
+import UserContext from '../UserContext'
+import { set } from 'husky'
+
+const QUERY_GET_PROGRAMS = gql`
+  {
+    programs(options: { limit: 50, skip: 80 }) {
+      id
+      name
+    }
+  }
+`
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  paper: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+  },
+}))
+
 export default function Dashboard() {
   const theme = useTheme()
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      display: 'flex',
-    },
-    paper: {
-      padding: theme.spacing(2),
-      display: 'flex',
-      overflow: 'auto',
-      flexDirection: 'column',
-    },
-    fixedHeight: {
-      height: 240,
-    },
-  }))
   const classes = useStyles(theme)
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
+  const fixedHeightPaper = clsx(classes.paper)
+  const user = useContext(UserContext)
+  const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
+  if (error) return <p>Error</p>
+  if (loading) return <p>Loading</p>
+
+  const handleChange = (e) => {
+    user.saveUserContext({
+      program: e.target.value,
+      saveUserContext: user.saveUserContext,
+    })
+  }
 
   return (
     <React.Fragment>
-      <Grid container spacing={4}>
-        {/* Ratings Chart */}
-        <Grid item xs={12} md={8} lg={7}>
-          <Paper className={fixedHeightPaper}>
-            <RatingsChart />
-          </Paper>
-        </Grid>
-        {/* User Count */}
-        <Grid item xs={12} md={4} lg={5}>
-          <Paper className={fixedHeightPaper}>
-            <UserCount />
-          </Paper>
-        </Grid>
-        {/* Recent Reviews */}
-        <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            <RecentReviews />
-          </Paper>
-        </Grid>
-      </Grid>
+      <Container>
+        <Paper className={fixedHeightPaper}>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
+            <Select label="Program Name" onChange={handleChange}>
+              {data.programs.map((program) => {
+                return (
+                  <MenuItem
+                    key={program.id}
+                    value={program.id}
+                    name={program.name}
+                  >
+                    {program.name}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
+          <Title>Program Graph</Title>
+          <ProgramGraphs />
+          <Title>Courses</Title>
+          <CourseTable programs={data.programs} />
+        </Paper>
+      </Container>
     </React.Fragment>
   )
 }
