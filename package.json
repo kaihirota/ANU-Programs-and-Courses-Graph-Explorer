@@ -63,5 +63,8 @@
       "prettier --write",
       "eslint --fix"
     ]
+  },
+  "engines": {
+    "node": ">=12"
   }
 }
