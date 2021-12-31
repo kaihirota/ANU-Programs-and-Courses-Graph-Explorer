@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import {
   CircularProgress,
   FormControl,
@@ -8,28 +7,17 @@ import {
   Select,
 } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
-import Title from './Title'
-import CourseTable from './CourseTable'
 import './graph.css'
+import PropTypes from 'prop-types'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
 const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 const CompletionEvent = 'completed'
-const QUERY_GET_PROGRAMS = gql`
-  {
-    programs(options: { limit: 50, skip: 80 }) {
-      id
-      name
-    }
-  }
-`
 
-export default function ProgramGraphs() {
-  const [loading_curr, setLoading] = useState(false)
-  const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
-  if (error) return <p>Error</p>
-  if (loading) return <p>Loading</p>
+export default function ProgramGraphs(props) {
+  const { programs } = props
+  const [loading, setLoading] = useState(false)
 
   const drawGraph = (program_id) => {
     const config = {
@@ -83,14 +71,13 @@ export default function ProgramGraphs() {
 
   return (
     <React.Fragment>
-      <Title>Program Graph</Title>
       <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
         <Select label="Program Name" onChange={handleChange}>
-          {data.programs.map((n) => {
+          {programs.map((program) => {
             return (
-              <MenuItem key={n.id} value={n.id} name={n.name}>
-                {n.name}
+              <MenuItem key={program.id} value={program.id} name={program.name}>
+                {program.name}
               </MenuItem>
             )
           })}
@@ -100,10 +87,12 @@ export default function ProgramGraphs() {
         <div className="loading-icon-wrapper">
           {loading && <CircularProgress size={100} />}
         </div>
-        <div id="graph-vis"></div>
+        <div id="graph-vis" />
       </div>
-      <Title>Courses</Title>
-      <CourseTable></CourseTable>
     </React.Fragment>
   )
+}
+
+ProgramGraphs.propTypes = {
+  programs: PropTypes.array.isRequired,
 }

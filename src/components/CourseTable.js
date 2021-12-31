@@ -7,32 +7,8 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-
-export function createRow(
-  id,
-  name,
-  units,
-  academic_career,
-  college,
-  course_convener
-) {
-  return {
-    id,
-    name,
-    units,
-    academic_career,
-    college,
-    course_convener,
-  }
-}
-
-const rows = [
-  createRow('COMP9999', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createRow('COMP4499', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createRow('COMP9449', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createRow('COMP9900', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-  createRow('COMP2100', 'test class', 6, 'PGRD', 'CECS', 'Santa Claus'),
-]
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { gql, useLazyQuery } from '@apollo/client'
 
 function Row(props) {
   const { row } = props
@@ -70,34 +46,90 @@ Row.propTypes = {
 }
 
 export default function CourseTable(props) {
-  const { rows } = props
+  const { programs } = props
+  const QUERY_PROGRAM_CLASSES = gql`
+    query programs($id: ID!) {
+      programs(where: { id: $id }) {
+        classes {
+          id
+          name
+          units
+          academic_career
+          college
+          course_convener
+        }
+      }
+    }
+  `
+
+  const [getClasses, { data, error, loading }] = useLazyQuery(
+    QUERY_PROGRAM_CLASSES
+  )
+
+  const handleChange = (e) => {
+    getClasses({ variables: { id: e.target.value } }).then((r) =>
+      console.log(r)
+    )
+  }
+
+  if (error || loading) {
+    return (
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
+        <Select label="Program Name" onChange={handleChange}>
+          {programs.map((program) => {
+            return (
+              <MenuItem key={program.id} value={program.id} name={program.name}>
+                {program.name}
+              </MenuItem>
+            )
+          })}
+        </Select>
+      </FormControl>
+    )
+  }
 
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell align="right">Name</TableCell>
-            <TableCell align="right">Units</TableCell>
-            <TableCell align="right">Academic Career</TableCell>
-            <TableCell align="right">College</TableCell>
-            <TableCell align="right">Convener</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <Row key={row.id} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <React.Fragment>
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
+        <Select label="Program Name" onChange={handleChange}>
+          {programs.map((program) => {
+            return (
+              <MenuItem key={program.id} value={program.id} name={program.name}>
+                {program.name}
+              </MenuItem>
+            )
+          })}
+        </Select>
+      </FormControl>
+      {!loading && !error && (
+        <TableContainer component={Paper}>
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell align="right">Name</TableCell>
+                <TableCell align="right">Units</TableCell>
+                <TableCell align="right">Academic Career</TableCell>
+                <TableCell align="right">College</TableCell>
+                <TableCell align="right">Convener</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data &&
+                data.programs &&
+                data.programs[0].classes.map((row) => (
+                  <Row key={row.id} row={row} />
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </React.Fragment>
   )
 }
 
 CourseTable.propTypes = {
-  rows: PropTypes.array.isRequired,
-}
-CourseTable.defaultProps = {
-  rows: rows,
+  programs: PropTypes.array.isRequired,
 }
