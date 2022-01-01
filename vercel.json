@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/graphql/:path*",
+      "destination": "http://ec2-3-26-165-14.ap-southeast-2.compute.amazonaws.com/graphql/:path*"
+    },
+    {
+      "source": "/graphql",
+      "destination": "http://ec2-3-26-165-14.ap-southeast-2.compute.amazonaws.com/graphql"
+    }
+  ]
+}
