@@ -55,6 +55,8 @@ export default function ProgramGraphs() {
       //   hierarchical: true,
       //   hierarchical_sort_method: 'directed',
       initial_cypher: `MATCH p=(:Program {id: '${program_id}'})-[r:REQUIREMENT*1..]->() RETURN p`,
+      // encrypted: 'ENCRYPTION_ON',
+      // trust: 'TRUST_SYSTEM_CA_SIGNED_CERTIFICATES',
     }
 
     document.getElementById('graph-vis').innerHTML = ''
