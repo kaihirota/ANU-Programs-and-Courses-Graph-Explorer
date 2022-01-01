@@ -87,7 +87,6 @@ export default function CourseTable(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {console.log(data)}
               {data &&
                 data.programs.length > 0 &&
                 data.programs[0].classes.map((row) => (
