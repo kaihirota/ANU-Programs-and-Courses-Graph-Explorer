@@ -174,7 +174,7 @@ export default function CourseTable() {
           <Table aria-label="collapsible table">
             <TableHead>
               <TableRow>
-                <TableCell />
+                <TableCell>Completed</TableCell>
                 <TableCell />
                 <TableCell>ID</TableCell>
                 <TableCell align="right">Name</TableCell>

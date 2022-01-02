@@ -64,12 +64,22 @@ export default function Dashboard() {
   const programs = getUniquePrograms(data.programs)
 
   const updateContext = (e) => {
-    const [programName, programId] = e.target.textContent.split(' - ')
-    if (programId && programId !== '') {
-      user.saveUserContext({
-        program: programId,
-        saveUserContext: user.saveUserContext,
-      })
+    if (e.target.textContent) {
+      const [programName, programId] = e.target.textContent.split(' - ')
+      if (programId && programId !== '') {
+        user.saveUserContext({
+          program: programId,
+          saveUserContext: user.saveUserContext,
+        })
+      }
+    } else if (e.target.value) {
+      const [programName, programId] = e.target.textContent.split(' - ')
+      if (programId && programId !== '') {
+        user.saveUserContext({
+          program: programId,
+          saveUserContext: user.saveUserContext,
+        })
+      }
     }
   }
 
@@ -84,6 +94,7 @@ export default function Dashboard() {
             sx={{ width: 400 }}
             renderInput={(params) => <TextField {...params} label="Program" />}
             onChange={updateContext}
+            onClose={updateContext}
           />
           <Title>Program Graph</Title>
           <ProgramGraphs />
