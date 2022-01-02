@@ -156,9 +156,11 @@ export default function CourseTable() {
       .forEach((cls) => {
         obj[cls.id] = cls
       })
-    return Object.keys(obj).map(function (id) {
-      return obj[id]
-    })
+    return Object.keys(obj)
+      .map((id) => {
+        return obj[id]
+      })
+      .sort((a, b) => a.id.localeCompare(b.id))
   }
 
   useEffect(() => {

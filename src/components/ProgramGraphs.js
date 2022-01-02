@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import {
   CircularProgress,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -10,6 +11,7 @@ import Neovis from 'neovis.js/dist/neovis.js'
 import './graph.css'
 import PropTypes from 'prop-types'
 import UserContext from '../UserContext'
+import Switch from '@mui/material/Switch'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -19,6 +21,7 @@ const CompletionEvent = 'completed'
 export default function ProgramGraphs() {
   const user = useContext(UserContext)
   const [loading, setLoading] = useState(false)
+  const [hierarchicalSort, setHierarchicalSort] = useState(false)
 
   const drawGraph = (program_id) => {
     const config = {
@@ -51,11 +54,10 @@ export default function ProgramGraphs() {
         },
       },
       arrows: true,
-      hierarchical: false,
-      //   hierarchical: true,
-      //   hierarchical_sort_method: 'directed',
+      hierarchical: hierarchicalSort,
+      hierarchical_sort_method: 'directed',
       initial_cypher: `MATCH p=(:Program {id: '${program_id}'})-[r:REQUIREMENT*1..]->() RETURN p`,
-      encrypted: 'ENCRYPTION_ON',
+      // encrypted: 'ENCRYPTION_ON',
       // trust: 'TRUST_SYSTEM_CA_SIGNED_CERTIFICATES',
     }
 
@@ -72,13 +74,27 @@ export default function ProgramGraphs() {
     if (user && user.program !== '') {
       drawGraph(user.program)
     }
-  }, [user])
+  }, [user, hierarchicalSort])
+
+  const handleChange = (e) => {
+    setHierarchicalSort(e.target.checked)
+  }
 
   return (
     <React.Fragment>
       <div className="graph-and-loading-icon-wrapper">
+        <FormControlLabel
+          control={
+            <Switch
+              size="large"
+              checked={hierarchicalSort}
+              onChange={handleChange}
+            />
+          }
+          label="Hierarchical"
+        />
         <div className="loading-icon-wrapper">
-          {loading && <CircularProgress size={100} />}
+          {loading && <CircularProgress size={20} />}
         </div>
         <div id="graph-vis" />
       </div>
