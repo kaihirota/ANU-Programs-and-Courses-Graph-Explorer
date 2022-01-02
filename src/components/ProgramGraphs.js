@@ -57,7 +57,7 @@ export default function ProgramGraphs() {
       hierarchical: hierarchicalSort,
       hierarchical_sort_method: 'directed',
       initial_cypher: `MATCH p=(:Program {id: '${program_id}'})-[r:REQUIREMENT*1..]->() RETURN p`,
-      // encrypted: 'ENCRYPTION_ON',
+      encrypted: 'ENCRYPTION_ON',
       // trust: 'TRUST_SYSTEM_CA_SIGNED_CERTIFICATES',
     }
 
