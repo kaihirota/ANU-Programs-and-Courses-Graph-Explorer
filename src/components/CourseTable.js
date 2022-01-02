@@ -19,98 +19,6 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
-function Row(props) {
-  const { row } = props
-  const [open, setOpen] = useState(false)
-  const [isSelected, setIsSelected] = useState(false)
-
-  const handleClick = (event) => {
-    // let newSelected = [];
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, name);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //       selected.slice(0, selectedIndex),
-    //       selected.slice(selectedIndex + 1),
-    //   );
-    // }
-
-    // setSelected(newSelected);
-    setIsSelected(!isSelected)
-    console.log(event)
-  }
-
-  return (
-    <React.Fragment>
-      <TableRow
-        hover
-        role="checkbox"
-        aria-checked={isSelected}
-        tabIndex={-1}
-        key={row.name}
-        selected={isSelected}
-      >
-        <TableCell>
-          <Checkbox
-            color="primary"
-            checked={isSelected}
-            onClick={(event) => handleClick(event)}
-            inputProps={{
-              'aria-labelledby': row.id,
-            }}
-          />
-        </TableCell>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row" id={row.id} padding="none">
-          <a
-            href={'https://programsandcourses.anu.edu.au/course/' + row.id}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {row.id}
-          </a>
-        </TableCell>
-        <TableCell align="right">{row.name}</TableCell>
-        <TableCell align="right">{row.units}</TableCell>
-        <TableCell align="right">{row.academic_career}</TableCell>
-        <TableCell align="right">{row.college}</TableCell>
-        <TableCell align="right">{row.course_convener}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>{row.description}</Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  )
-}
-
-Row.propTypes = {
-  row: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    units: PropTypes.number,
-    academic_career: PropTypes.string,
-    college: PropTypes.string,
-    course_convener: PropTypes.string,
-    description: PropTypes.string,
-  }).isRequired,
-}
-
 export default function CourseTable() {
   const user = useContext(UserContext)
   const QUERY_PROGRAM_CLASSES = gql`
@@ -133,8 +41,95 @@ export default function CourseTable() {
     QUERY_PROGRAM_CLASSES
   )
   const [classes, setClasses] = useState([])
+  const [selectedClasses, setSelectedClasses] = useState([])
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
+
+  function Row(props) {
+    const { row, selected } = props
+    const [open, setOpen] = useState(false)
+    const [isSelected, setIsSelected] = useState(selected)
+
+    const updateSelectedClasses = (checked, classId) => {
+      if (checked && !selectedClasses.includes(classId)) {
+        setSelectedClasses([...selectedClasses, classId])
+      } else if (!checked && selectedClasses.includes(classId)) {
+        setSelectedClasses(selectedClasses.filter((c) => c !== classId))
+      }
+    }
+
+    const handleClick = (event) => {
+      setIsSelected(event.target.checked)
+      updateSelectedClasses(event.target.checked, row.id)
+    }
+
+    return (
+      <React.Fragment>
+        <TableRow
+          hover
+          role="checkbox"
+          aria-checked={isSelected}
+          tabIndex={-1}
+          key={row.name}
+          selected={isSelected}
+        >
+          <TableCell>
+            <Checkbox
+              color="primary"
+              checked={isSelected}
+              onClick={handleClick}
+              inputProps={{
+                'aria-labelledby': row.id,
+              }}
+            />
+          </TableCell>
+          <TableCell>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+          <TableCell component="th" scope="row" id={row.id} padding="none">
+            <a
+              href={'https://programsandcourses.anu.edu.au/course/' + row.id}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {row.id}
+            </a>
+          </TableCell>
+          <TableCell align="right">{row.name}</TableCell>
+          <TableCell align="right">{row.units}</TableCell>
+          <TableCell align="right">{row.academic_career}</TableCell>
+          <TableCell align="right">{row.college}</TableCell>
+          <TableCell align="right">{row.course_convener}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>{row.description}</Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </React.Fragment>
+    )
+  }
+
+  Row.propTypes = {
+    row: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      units: PropTypes.number,
+      academic_career: PropTypes.string,
+      college: PropTypes.string,
+      course_convener: PropTypes.string,
+      description: PropTypes.string,
+    }).isRequired,
+    selected: PropTypes.bool,
+  }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -168,7 +163,6 @@ export default function CourseTable() {
 
   useEffect(() => {
     if (data && data.programs && data.programs.length > 0) {
-      console.log(data)
       setClasses(getUniqueClasses(data.programs[0].classes))
     }
   }, [data])
@@ -195,7 +189,13 @@ export default function CourseTable() {
                 classes
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
-                    return <Row key={row.id} row={row} />
+                    return (
+                      <Row
+                        key={row.id}
+                        row={row}
+                        selected={selectedClasses.includes(row.id)}
+                      />
+                    )
                   })}
               {emptyRows > 0 && (
                 <TableRow

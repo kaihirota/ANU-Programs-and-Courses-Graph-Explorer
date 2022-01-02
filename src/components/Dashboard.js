@@ -63,7 +63,7 @@ export default function Dashboard() {
 
   const programs = getUniquePrograms(data.programs)
 
-  const handleChange = (e) => {
+  const updateContext = (e) => {
     const [programName, programId] = e.target.textContent.split(' - ')
     if (programId && programId !== '') {
       user.saveUserContext({
@@ -83,7 +83,7 @@ export default function Dashboard() {
             getOptionLabel={(option) => `${option.name} - ${option.id}`}
             sx={{ width: 400 }}
             renderInput={(params) => <TextField {...params} label="Program" />}
-            onChange={handleChange}
+            onChange={updateContext}
           />
           <Title>Program Graph</Title>
           <ProgramGraphs />
