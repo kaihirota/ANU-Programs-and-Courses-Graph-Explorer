@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -7,7 +7,6 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { gql, useLazyQuery } from '@apollo/client'
 import UserContext from '../UserContext'
 
@@ -46,7 +45,7 @@ Row.propTypes = {
   }).isRequired,
 }
 
-export default function CourseTable(props) {
+export default function CourseTable() {
   const user = useContext(UserContext)
   const QUERY_PROGRAM_CLASSES = gql`
     query programs($id: ID!) {
@@ -67,8 +66,8 @@ export default function CourseTable(props) {
     QUERY_PROGRAM_CLASSES
   )
 
-  useEffect(() => {
-    getClasses({ variables: { id: user.program } }).then((r) => console.log(r))
+  useEffect(async () => {
+    await getClasses({ variables: { id: user.program } })
   }, [user])
 
   return (

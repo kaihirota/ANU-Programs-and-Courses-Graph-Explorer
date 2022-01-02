@@ -21,7 +21,7 @@ import { Autocomplete } from '@mui/material'
 
 const QUERY_GET_PROGRAMS = gql`
   {
-    programs(options: { limit: 50, skip: 80 }) {
+    programs {
       id
       name
     }
@@ -40,17 +40,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const getUniquePrograms = (programs) => {
+  let obj = {}
+  programs
+    .filter((program) => program.id && program.id !== '')
+    .filter((program) => program.name && program.name.trim() !== '')
+    .forEach((program) => {
+      obj[program.id] = program
+    })
+  return Object.keys(obj).map(function (id) {
+    return obj[id]
+  })
+}
+
 export default function Dashboard() {
   const theme = useTheme()
-  const classes = useStyles(theme)
-  const fixedHeightPaper = clsx(classes.paper)
+  const fixedHeightPaper = clsx(useStyles(theme).paper)
   const user = useContext(UserContext)
   const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
   if (error) return <p>Error</p>
   if (loading) return <p>Loading</p>
 
+  const programs = getUniquePrograms(data.programs)
+
   const handleChange = (e) => {
-    const programId = data.programs.find((p) => p.name === e.target.textContent)
+    const [programName, programId] = e.target.textContent.split(' - ')
     if (programId && programId !== '') {
       user.saveUserContext({
         program: programId,
@@ -65,10 +79,8 @@ export default function Dashboard() {
         <Paper className={fixedHeightPaper}>
           <Autocomplete
             disablePortal
-            options={data.programs.filter(
-              (program) => program.name !== '' && program.id !== ''
-            )}
-            getOptionLabel={(option) => option.name}
+            options={programs}
+            getOptionLabel={(option) => `${option.name} - ${option.id}`}
             sx={{ width: 400 }}
             renderInput={(params) => <TextField {...params} label="Program" />}
             onChange={handleChange}
@@ -76,7 +88,7 @@ export default function Dashboard() {
           <Title>Program Graph</Title>
           <ProgramGraphs />
           <Title>Courses</Title>
-          <CourseTable programs={data.programs} />
+          <CourseTable />
         </Paper>
       </Container>
     </React.Fragment>
