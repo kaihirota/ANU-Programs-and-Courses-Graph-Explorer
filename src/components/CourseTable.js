@@ -83,15 +83,6 @@ export default function CourseTable() {
               }}
             />
           </TableCell>
-          <TableCell>
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
           <TableCell component="th" scope="row" id={row.id} padding="none">
             <a
               href={'https://programsandcourses.anu.edu.au/course/' + row.id}
@@ -106,6 +97,15 @@ export default function CourseTable() {
           <TableCell align="right">{row.academic_career}</TableCell>
           <TableCell align="right">{row.college}</TableCell>
           <TableCell align="right">{row.course_convener}</TableCell>
+          <TableCell>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -175,13 +175,13 @@ export default function CourseTable() {
             <TableHead>
               <TableRow>
                 <TableCell>Completed</TableCell>
-                <TableCell />
                 <TableCell>ID</TableCell>
                 <TableCell align="right">Name</TableCell>
                 <TableCell align="right">Units</TableCell>
                 <TableCell align="right">Academic Career</TableCell>
                 <TableCell align="right">College</TableCell>
                 <TableCell align="right">Convener</TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
