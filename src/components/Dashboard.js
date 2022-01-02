@@ -7,6 +7,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  TextField,
 } from '@material-ui/core'
 import clsx from 'clsx'
 
@@ -16,6 +17,7 @@ import { gql, useQuery } from '@apollo/client'
 import Title from './Title'
 import UserContext from '../UserContext'
 import { set } from 'husky'
+import { Autocomplete } from '@mui/material'
 
 const QUERY_GET_PROGRAMS = gql`
   {
@@ -48,32 +50,29 @@ export default function Dashboard() {
   if (loading) return <p>Loading</p>
 
   const handleChange = (e) => {
-    user.saveUserContext({
-      program: e.target.value,
-      saveUserContext: user.saveUserContext,
-    })
+    const programId = data.programs.find((p) => p.name === e.target.textContent)
+    if (programId && programId !== '') {
+      user.saveUserContext({
+        program: programId,
+        saveUserContext: user.saveUserContext,
+      })
+    }
   }
 
   return (
     <React.Fragment>
       <Container>
         <Paper className={fixedHeightPaper}>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Select degree</InputLabel>
-            <Select label="Program Name" onChange={handleChange}>
-              {data.programs.map((program) => {
-                return (
-                  <MenuItem
-                    key={program.id}
-                    value={program.id}
-                    name={program.name}
-                  >
-                    {program.name}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            disablePortal
+            options={data.programs.filter(
+              (program) => program.name !== '' && program.id !== ''
+            )}
+            getOptionLabel={(option) => option.name}
+            sx={{ width: 400 }}
+            renderInput={(params) => <TextField {...params} label="Program" />}
+            onChange={handleChange}
+          />
           <Title>Program Graph</Title>
           <ProgramGraphs />
           <Title>Courses</Title>
