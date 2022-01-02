@@ -9,12 +9,26 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { gql, useLazyQuery } from '@apollo/client'
 import UserContext from '../UserContext'
+import { Box, Collapse, IconButton } from '@material-ui/core'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 function Row(props) {
   const { row } = props
+  const [open, setOpen] = React.useState(false)
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
         <TableCell component="th" scope="row">
           <a
             href={'https://programsandcourses.anu.edu.au/course/' + row.id}
@@ -30,6 +44,13 @@ function Row(props) {
         <TableCell align="right">{row.college}</TableCell>
         <TableCell align="right">{row.course_convener}</TableCell>
       </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>{row.description}</Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
     </React.Fragment>
   )
 }
@@ -42,6 +63,7 @@ Row.propTypes = {
     academic_career: PropTypes.string,
     college: PropTypes.string,
     course_convener: PropTypes.string,
+    description: PropTypes.string,
   }).isRequired,
 }
 
@@ -57,6 +79,7 @@ export default function CourseTable() {
           academic_career
           college
           course_convener
+          description
         }
       }
     }
@@ -77,6 +100,7 @@ export default function CourseTable() {
           <Table aria-label="collapsible table">
             <TableHead>
               <TableRow>
+                <TableCell />
                 <TableCell>ID</TableCell>
                 <TableCell align="right">Name</TableCell>
                 <TableCell align="right">Units</TableCell>
