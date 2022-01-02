@@ -1,14 +1,6 @@
 import React, { useContext } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import {
-  Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-} from '@material-ui/core'
+import { Container, Paper, TextField } from '@material-ui/core'
 import clsx from 'clsx'
 
 import ProgramGraphs from './ProgramGraphs'
@@ -16,7 +8,6 @@ import CourseTable from './CourseTable'
 import { gql, useQuery } from '@apollo/client'
 import Title from './Title'
 import UserContext from '../UserContext'
-import { set } from 'husky'
 import { Autocomplete } from '@mui/material'
 
 const QUERY_GET_PROGRAMS = gql`
@@ -53,7 +44,7 @@ const getUniquePrograms = (programs) => {
   })
 }
 
-export default function Dashboard() {
+export default function DashboardPrograms() {
   const theme = useTheme()
   const fixedHeightPaper = clsx(useStyles(theme).paper)
   const user = useContext(UserContext)

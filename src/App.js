@@ -7,7 +7,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
   AppBar,
   Box,
-  Button,
   Container,
   CssBaseline,
   Divider,
@@ -23,14 +22,16 @@ import {
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon,
-  Dashboard as DashboardIcon,
   Menu as MenuIcon,
 } from '@material-ui/icons'
-import Dashboard from './components/Dashboard'
+import SchoolIcon from '@material-ui/icons/School'
+import DashboardPrograms from './components/DashboardPrograms'
 import dotenv from 'dotenv'
 import UserContext from './UserContext'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import HomeIcon from '@mui/icons-material/Home'
+import GolfCourseIcon from '@material-ui/icons/GolfCourse'
+import DashboardCourses from './components/DashboardCourses'
 
 // set environment variables from .env
 dotenv.config()
@@ -229,9 +230,17 @@ export default function App() {
             <Link to="/" className={classes.navLink}>
               <ListItem button>
                 <ListItemIcon>
-                  <DashboardIcon />
+                  <GolfCourseIcon />
                 </ListItemIcon>
-                <ListItemText primary="Dashboard" />
+                <ListItemText primary="Programs" />
+              </ListItem>
+            </Link>
+            <Link to="/courses" className={classes.navLink}>
+              <ListItem button>
+                <ListItemIcon>
+                  <SchoolIcon />
+                </ListItemIcon>
+                <ListItemText primary="Courses" />
               </ListItem>
             </Link>
           </List>
@@ -242,7 +251,8 @@ export default function App() {
           <Container maxWidth="lg" className={classes.container}>
             <UserContext.Provider value={userContext}>
               <Switch>
-                <Route exact path="/" component={Dashboard} />
+                <Route exact path="/" component={DashboardPrograms} />
+                <Route exact path="/courses" component={DashboardCourses} />
               </Switch>
             </UserContext.Provider>
             <Box pt={4}>
