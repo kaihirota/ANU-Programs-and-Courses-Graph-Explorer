@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
   AppBar,
   Box,
+  Button,
   Container,
   CssBaseline,
   Divider,
@@ -28,20 +29,45 @@ import {
 import Dashboard from './components/Dashboard'
 import dotenv from 'dotenv'
 import UserContext from './UserContext'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import HomeIcon from '@mui/icons-material/Home'
 
 // set environment variables from .env
 dotenv.config()
 
-function Copyright() {
+function Footer() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <MUILink color="inherit" href="https://khirota.co/">
-        ANU Graphs
-      </MUILink>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+    <>
+      <Typography variant="body2" color="textSecondary" align="center">
+        {'This is an attempt to create an improved catalogue of programs and '}
+        {'courses, here at the Australian National University.'}
+        <br />
+        {
+          'This project is currently actively being developed and improved as of January 2022.'
+        }
+      </Typography>
+      <Divider />
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        align="center"
+        sx={{ marginTop: 20 }}
+      >
+        {'Made with'}
+        {' \u{2764}'}
+      </Typography>
+      <Box
+        component="span"
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <MUILink color="inherit" href="https://khirota.co/">
+          <HomeIcon fontSize="small" href="https://khirota.co/" />
+        </MUILink>
+        <MUILink color="inherit" href="https://github.com/from81/">
+          <GitHubIcon fontSize="small" href="https://khirota.co/" />
+        </MUILink>
+      </Box>
+    </>
   )
 }
 
@@ -220,7 +246,7 @@ export default function App() {
               </Switch>
             </UserContext.Provider>
             <Box pt={4}>
-              <Copyright />
+              <Footer />
             </Box>
           </Container>
         </main>
