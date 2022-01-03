@@ -1,15 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import {
-  CircularProgress,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Select,
-} from '@material-ui/core'
+import { FormControlLabel } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
 import './graph.css'
-import PropTypes from 'prop-types'
 import UserContext from '../UserContext'
 import Switch from '@mui/material/Switch'
 
@@ -93,9 +85,6 @@ export default function ProgramGraphs() {
           }
           label="Hierarchical"
         />
-        <div className="loading-icon-wrapper">
-          {loading && <CircularProgress size={20} />}
-        </div>
         <div id="graph-vis" />
       </div>
     </React.Fragment>
