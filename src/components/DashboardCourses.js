@@ -4,7 +4,13 @@ import { Container, Paper } from '@material-ui/core'
 import clsx from 'clsx'
 import Title from './Title'
 import './graph.css'
+// import '../index.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
+
+import ReactDOM from 'react-dom'
+import Graph from 'react-graph-vis'
+
+// need to import the vis network css in order to show tooltip
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -32,6 +38,12 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
+  myNetwork: {
+    height: '500px',
+    border: '1px solid #444444',
+    backgroundColor: '#222222',
+    borderRadius: 10,
+  },
 }))
 
 const getUniqueClasses = (classes) => {
@@ -50,25 +62,60 @@ const getUniqueClasses = (classes) => {
 }
 
 const MyCustomGraph = () => {
-  const [nodes, setNodes] = useState([])
-  const [edges, setEdges] = useState([])
-  const [dataset, setDataset] = useState(null)
-  const queryNodes =
-    'MATCH (p:Course {subject_code: $subject_code})-[]-(:Course {subject_code: $subject_code}) RETURN p LIMIT 200'
-  const queryEdges =
-    'MATCH p=(:Course {subject_code: $subject_code})-[]-(:Course {subject_code: $subject_code}) RETURN p LIMIT 200'
+  const styles = useStyles()
+  const [dataset, setDataset] = useState({
+    nodes: [
+      { id: 1, label: 'Node', title: 'node 1 tootip text' },
+      { id: 2, label: 'Node', title: 'node 2 tootip text' },
+      { id: 3, label: 'Node', title: 'node 3 tootip text' },
+      { id: 4, label: 'Node', title: 'node 4 tootip text' },
+      { id: 5, label: 'Node', title: 'node 5 tootip text' },
+    ],
+    edges: [
+      { from: 1, to: 2, label: 'Label' },
+      { from: 1, to: 3, label: 'Label' },
+      { from: 2, to: 4, label: 'Label' },
+      { from: 2, to: 5, label: 'Label' },
+    ],
+  })
+  const query =
+    'MATCH p=(:Course {subject_code: $subject_code})-[]-(:Course {subject_code: $subject_code}) RETURN p LIMIT 30'
 
-  useEffect(async () => {
+  const extractLink = (link) => {
+    return {
+      from: link.start.properties.id,
+      to: link.end.properties.id,
+      // label: link.segments[0].relationship.type,
+    }
+  }
+
+  const extractNode = (node) => {
+    return {
+      // ...node.properties,
+      type: node.labels[0],
+      group: node.properties.subject_code,
+      label: node.properties.id,
+    }
+  }
+
+  useEffect(() => {
     const session = driver.session({ defaultAccessMode: neo4j.session.READ })
-    // the Promise way, where the complete result is collected before we act on it:
     session
-      .run(queryNodes, { subject_code: 'MATH' })
+      .run(query, { subject_code: 'COMP' })
       .then((result) => {
-        setNodes(
-          getUniqueClasses(
-            result.records.map((item) => item.get('p').properties)
-          )
-        )
+        let nodes = {}
+        const edges = result.records
+          .map((item) => item.get('p'))
+          .map((item) => {
+            const edge = extractLink(item)
+            nodes[edge.from] = extractNode(item.start)
+            nodes[edge.to] = extractNode(item.end)
+            return edge
+          })
+        setDataset({
+          edges: edges,
+          nodes: Object.keys(nodes).map((key) => nodes[key]),
+        })
       })
       .catch((error) => {
         console.log(error)
@@ -76,40 +123,49 @@ const MyCustomGraph = () => {
       .then(() => session.close())
   }, [])
 
-  useEffect(async () => {
-    const session = driver.session({ defaultAccessMode: neo4j.session.READ })
-    session
-      .run(queryEdges, { subject_code: 'MATH' })
-      .then((result) => {
-        setEdges(
-          result.records
-            .map((item) => item.get('p'))
-            .map((item) => {
-              return {
-                source: item.start.properties.id,
-                target: item.end.properties.id,
-                value: item.relationship.type,
-              }
-            })
-        )
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-      .then(() => session.close())
-  })
+  const options = {
+    layout: {
+      hierarchical: false,
+    },
+    nodes: {
+      shape: 'dot',
+      size: 30,
+      font: {
+        size: 32,
+        color: '#ffffff',
+      },
+      borderWidth: 2,
+    },
+    edges: {
+      color: '#2054FF',
+      width: 5,
+    },
+    height: '100%',
+  }
 
-  // Construct a VisJS object based on node and rel graphql responses
-  useEffect(() => {
-    if (nodes && edges) {
-      setDataset({
-        nodes: nodes,
-        edges: edges,
-      })
-    }
-  }, [nodes, edges])
+  const events = {
+    select: (event) => {
+      const { nodes, edges } = event
+      // console.log(event)
+    },
+  }
 
-  return null
+  // useEffect(() => {
+  //   console.log(dataset)
+  // }, [dataset])
+
+  return (
+    <div className={styles.myNetwork}>
+      <Graph
+        graph={dataset}
+        options={options}
+        events={events}
+        getNetwork={(network) => {
+          //  if you want access to vis.js network api you can set the state in a parent component using this property
+        }}
+      />
+    </div>
+  )
 }
 
 export default function DashboardCourses() {
