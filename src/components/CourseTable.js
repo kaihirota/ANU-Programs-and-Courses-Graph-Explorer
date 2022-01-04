@@ -43,8 +43,8 @@ export default function CourseTable() {
   )
   const [classes, setClasses] = useState([])
   const [selectedClasses, setSelectedClasses] = useState([])
-  const [page, setPage] = React.useState(0)
-  const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   function Row(props) {
     const { row, selected } = props
