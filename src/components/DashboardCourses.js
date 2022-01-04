@@ -35,8 +35,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
   myNetwork: {
-    height: '500px',
-    border: '1px solid #444444',
     backgroundColor: '#222222',
     borderRadius: 10,
   },
@@ -67,13 +65,13 @@ const MyCustomGraph = () => {
     return {
       from: link.start.properties.id,
       to: link.end.properties.id,
-      // label: link.segments[0].relationship.type,
+      label: link.segments[0].relationship.type,
     }
   }
 
   const extractNode = (node) => {
     return {
-      // ...node.properties,
+      ...node.properties,
       type: node.labels[0],
       group: node.properties.subject_code,
       label: node.properties.id,
@@ -116,7 +114,7 @@ const MyCustomGraph = () => {
       })
     })
     // dataset.edges.forEach((e) => {
-    //   graph.addEdge(e.from, e.to, { color: '#CCC', size: 1 })
+    // graph.addEdge(e.from, e.to, { color: '#CCC', size: 1 })
     // })
   }, [dataset])
 
@@ -135,7 +133,7 @@ export default function DashboardCourses() {
           <Title>Courses</Title>
           <SigmaContainer
             className={styles.myNetwork}
-            style={{ height: '500px', width: '500px' }}
+            style={{ height: '600px', width: '100%' }}
           >
             <MyCustomGraph />
           </SigmaContainer>
