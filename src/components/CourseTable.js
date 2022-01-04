@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { gql, useLazyQuery } from '@apollo/client'
 import UserContext from '../UserContext'
+import { getUniqueClasses } from '../utils'
 import {
   Box,
   Checkbox,
@@ -147,21 +148,6 @@ export default function CourseTable() {
   useEffect(async () => {
     await getClasses({ variables: { id: user.program } })
   }, [user])
-
-  const getUniqueClasses = (classes) => {
-    let obj = {}
-    classes
-      .filter((cls) => cls.id && cls.id !== '')
-      .filter((cls) => cls.name && cls.name.trim() !== '')
-      .forEach((cls) => {
-        obj[cls.id] = cls
-      })
-    return Object.keys(obj)
-      .map((id) => {
-        return obj[id]
-      })
-      .sort((a, b) => a.id.localeCompare(b.id))
-  }
 
   useEffect(() => {
     if (data && data.programs && data.programs.length > 0) {
