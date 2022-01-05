@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
 import Title from './Title'
 import '@fortawesome/fontawesome-free/css/all.min.css'
@@ -7,11 +7,29 @@ import '../styles.css'
 import SigmaGraph from './sigmaGraph/SigmaGraph'
 import drawLabel from './sigmaGraph/canvas-utils'
 import { SigmaContainer } from 'react-sigma-v2'
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 
 export default function DashboardCourses() {
+  const [academicCareer, setAcademicCareer] = useState('UGRD')
+  const handleChange = (e) => {
+    setAcademicCareer(e.target.value)
+  }
   return (
     <React.Fragment>
       <Title>Courses</Title>
+      <FormControl style={{ width: '200px' }}>
+        <InputLabel id="demo-simple-select-label">Academic Career</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={academicCareer}
+          label="Type"
+          onChange={handleChange}
+        >
+          <MenuItem value="UGRD">Undergraduate</MenuItem>
+          <MenuItem value="PGRD">Postgraduate</MenuItem>
+        </Select>
+      </FormControl>
       <div className="graph-container">
         <SigmaContainer
           graphOptions={{ type: 'directed' }}
@@ -29,7 +47,7 @@ export default function DashboardCourses() {
           }}
           className="react-sigma"
         >
-          <SigmaGraph />
+          <SigmaGraph academicCareer={academicCareer} />
         </SigmaContainer>
       </div>
     </React.Fragment>

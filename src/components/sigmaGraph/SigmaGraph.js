@@ -15,6 +15,7 @@ import 'react-sigma-v2/lib/react-sigma-v2.css'
 import { GrClose } from 'react-icons/gr'
 import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi'
 import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
+import PropTypes from 'prop-types'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -27,9 +28,9 @@ const driver = neo4j.driver(
 // Close the driver when application exits.
 // This closes all used network connections.
 // await driver.close()
-// const query =
-//   'MATCH p=(:Course {subject_code: $subject_code})-[]-(:Course {subject_code: $subject_code}) RETURN p LIMIT 30'
-const query = 'MATCH p=(:Course)-[:PREREQUISITE]->(:Course) RETURN p LIMIT 500'
+
+const query =
+  'MATCH p=(:Course {academic_career: $academicCareer})-[:PREREQUISITE]->(:Course {academic_career: $academicCareer}) RETURN p'
 
 const extractNode = (node) => {
   return {
@@ -65,7 +66,8 @@ const getTags = (nodes) => {
   return ret
 }
 
-const SigmaGraph = () => {
+const SigmaGraph = (props) => {
+  const { academicCareer } = props
   const [showContents, setShowContents] = useState(false)
   const [dataset, setDataset] = useState({
     nodes: [],
@@ -81,8 +83,7 @@ const SigmaGraph = () => {
   useEffect(() => {
     const session = driver.session({ defaultAccessMode: neo4j.session.READ })
     session
-      .run(query)
-      // .run(query, { subject_code: 'COMP' })
+      .run(query, { academicCareer: academicCareer })
       .then((result) => {
         let nodesMap = {}
         const edges = result.records
@@ -109,7 +110,7 @@ const SigmaGraph = () => {
         console.log(error)
       })
       .then(() => session.close())
-  }, [])
+  }, [academicCareer])
 
   useEffect(() => {
     console.log(dataset)
@@ -185,6 +186,13 @@ const SigmaGraph = () => {
       )}
     </div>
   )
+}
+SigmaGraph.propTypes = {
+  academicCareer: PropTypes.string,
+}
+
+SigmaGraph.defaultProps = {
+  academicCareer: 'UGRD',
 }
 
 export default SigmaGraph
