@@ -1,20 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSigma } from 'react-sigma-v2'
-import { keyBy, mapValues } from 'lodash'
 import PropTypes from 'prop-types'
-import random from 'graphology-layout/random'
-import { zip } from 'lodash/array'
 import { circlepack } from 'graphology-layout'
-
-const getUniqueTags = (tags) => {
-  let obj = {}
-  tags.forEach((cls) => {
-    obj[cls.key] = cls
-  })
-  return Object.keys(obj).map((id) => {
-    return obj[id]
-  })
-}
 
 const GraphDataController = (props) => {
   const { dataset, filters, children } = props
@@ -45,7 +32,7 @@ const GraphDataController = (props) => {
     // set layout and positions of nodes
     // With options
     circlepack.assign(graph, {
-      hierarchyAttributes: ['subject_code'],
+      hierarchyAttributes: ['subject'],
     })
 
     // Use degrees as node sizes:
