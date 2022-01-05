@@ -29,7 +29,7 @@ const driver = neo4j.driver(
 // await driver.close()
 // const query =
 //   'MATCH p=(:Course {subject_code: $subject_code})-[]-(:Course {subject_code: $subject_code}) RETURN p LIMIT 30'
-const query = 'MATCH p=(:Course)-[:PREREQUISITE]->(:Course) RETURN p LIMIT 200'
+const query = 'MATCH p=(:Course)-[:PREREQUISITE]->(:Course) RETURN p LIMIT 500'
 
 const extractNode = (node) => {
   return {
