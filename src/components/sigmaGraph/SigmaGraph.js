@@ -35,7 +35,7 @@ const extractNode = (node) => {
   return {
     ...node.properties,
     label: `${node.properties.id} ${node.properties.name}`,
-    tag: node.properties.subject_code,
+    tag: node.properties.subject,
   }
 }
 
@@ -116,7 +116,7 @@ const SigmaGraph = () => {
   }, [dataset])
 
   return (
-    <div id="app-root" className={showContents ? 'show-contents' : ''}>
+    <div className={showContents ? 'show-contents' : ''}>
       <GraphSettingsController hoveredNode={hoveredNode} />
       <GraphEventsController setHoveredNode={setHoveredNode} />
       <GraphDataController dataset={dataset} filters={filtersState} />
