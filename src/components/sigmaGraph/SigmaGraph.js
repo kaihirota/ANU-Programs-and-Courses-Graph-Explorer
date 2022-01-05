@@ -61,8 +61,6 @@ const getTags = (nodes) => {
       color: colors[i % 10],
     }
   }
-  console.log(ret)
-
   return ret
 }
 
@@ -112,9 +110,9 @@ const SigmaGraph = (props) => {
       .then(() => session.close())
   }, [academicCareer])
 
-  useEffect(() => {
-    console.log(dataset)
-  }, [dataset])
+  // useEffect(() => {
+  //   console.log(dataset)
+  // }, [dataset])
 
   return (
     <div className={showContents ? 'show-contents' : ''}>
