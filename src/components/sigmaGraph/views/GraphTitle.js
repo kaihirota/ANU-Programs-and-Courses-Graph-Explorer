@@ -29,7 +29,7 @@ const GraphTitle = (props) => {
 
   return (
     <div className="graph-title">
-      <h1>A cartography of Wikipedia pages around data visualization</h1>
+      <h1>Cartography of Classes at the Australian National University</h1>
       <h2>
         <i>
           {graph.order} node{graph.order > 1 ? 's' : ''}{' '}
