@@ -4,6 +4,7 @@ import { keyBy, mapValues } from 'lodash'
 import PropTypes from 'prop-types'
 import random from 'graphology-layout/random'
 import { zip } from 'lodash/array'
+import { circlepack } from 'graphology-layout'
 
 const getUniqueTags = (tags) => {
   let obj = {}
@@ -41,28 +42,33 @@ const GraphDataController = (props) => {
       }
     })
 
-    // directly assign the positions to the nodes:
-    random.assign(graph)
+    // set layout and positions of nodes
+    // With options
+    circlepack.assign(graph, {
+      hierarchyAttributes: ['subject_code'],
+    })
 
     // Use degrees as node sizes:
-    // const scores = graph
-    //   .nodes()
-    //   .map((node) => graph.getNodeAttribute(node, 'score'))
-    // const minDegree = Math.min(...scores)
-    // const maxDegree = Math.max(...scores)
-    // const MIN_NODE_SIZE = 3
-    // const MAX_NODE_SIZE = 30
-    // graph.forEachNode((node) =>
-    //   graph.setNodeAttribute(
-    //     node,
-    //     'size',
-    //     ((graph.getNodeAttribute(node, 'score') - minDegree) /
-    //       (maxDegree - minDegree)) *
-    //       (MAX_NODE_SIZE - MIN_NODE_SIZE) +
-    //       MIN_NODE_SIZE
-    //   )
-    // )
-    graph.forEachNode((node) => graph.setNodeAttribute(node, 'size', 10))
+    graph.forEachNode((node) => {
+      graph.setNodeAttribute(node, 'score', graph.inDegree(node))
+    })
+    const scores = graph
+      .nodes()
+      .map((node) => graph.getNodeAttribute(node, 'score'))
+    const minDegree = Math.min(...scores)
+    const maxDegree = Math.max(...scores)
+    const MIN_NODE_SIZE = 3
+    const MAX_NODE_SIZE = 30
+    graph.forEachNode((node) =>
+      graph.setNodeAttribute(
+        node,
+        'size',
+        ((graph.getNodeAttribute(node, 'score') - minDegree) /
+          (maxDegree - minDegree)) *
+          (MAX_NODE_SIZE - MIN_NODE_SIZE) +
+          MIN_NODE_SIZE
+      )
+    )
 
     return () => graph.clear()
   }, [graph, dataset])
