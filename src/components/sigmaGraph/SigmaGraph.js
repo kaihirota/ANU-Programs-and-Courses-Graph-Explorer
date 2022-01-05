@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FullScreenControl, useSigma, ZoomControl } from 'react-sigma-v2'
+import { ZoomControl } from 'react-sigma-v2'
 import { constant, keyBy, mapValues, omit } from 'lodash'
 import chroma from 'chroma-js'
 
@@ -12,15 +12,9 @@ import GraphTitle from './views/GraphTitle'
 import TagsPanel from './views/TagsPanel'
 
 import 'react-sigma-v2/lib/react-sigma-v2.css'
-// import './styles.css'
 import { GrClose } from 'react-icons/gr'
 import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi'
-import {
-  BsArrowsFullscreen,
-  BsFullscreenExit,
-  BsZoomIn,
-  BsZoomOut,
-} from 'react-icons/bs'
+import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -57,6 +51,7 @@ const getTags = (nodes) => {
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index
   }
+
   return nodes
     .map((n) => n.tag)
     .filter(onlyUnique)
@@ -134,11 +129,11 @@ const SigmaGraph = () => {
                 <BiBookContent />
               </button>
             </div>
-            <FullScreenControl
-              className="ico"
-              customEnterFullScreen={<BsArrowsFullscreen />}
-              customExitFullScreen={<BsFullscreenExit />}
-            />
+            {/*<FullScreenControl*/}
+            {/*  className="ico"*/}
+            {/*  customEnterFullScreen={<BsArrowsFullscreen />}*/}
+            {/*  customExitFullScreen={<BsFullscreenExit />}*/}
+            {/*/>*/}
             <ZoomControl
               className="ico"
               customZoomIn={<BsZoomIn />}
