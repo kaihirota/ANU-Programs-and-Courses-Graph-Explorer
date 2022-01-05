@@ -27,7 +27,7 @@ body {
     font-family: "Public Sans", sans-serif;
     background: white;
     font-size: 0.9em;
-    overflow: hidden;
+    overflow: auto;
 }
 
 h1,
@@ -61,17 +61,17 @@ body {
     padding: 0;
 }
 
-#root-container {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-}
+/*#root-container {*/
+/*    width: 100vw;*/
+/*    height: 100vh;*/
+/*    position: relative;*/
+/*}*/
 
-#app-root,
-.sigma-container {
-    position: absolute;
-    inset: 0;
-}
+/*#app-root,*/
+/*.sigma-container {*/
+/*    position: absolute;*/
+/*    inset: 0;*/
+/*}*/
 
 .controls {
     position: absolute;

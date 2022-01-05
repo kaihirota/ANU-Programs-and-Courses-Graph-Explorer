@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
 import Title from './Title'
 import '@fortawesome/fontawesome-free/css/all.min.css'
-// import 'react-sigma-v2/lib/react-sigma-v2.css'
+import 'react-sigma-v2/lib/react-sigma-v2.css'
 import './sigmaGraph/styles.css'
 import SigmaGraph from './sigmaGraph/SigmaGraph'
 import drawLabel from './sigmaGraph/canvas-utils'
@@ -31,6 +31,8 @@ export default function DashboardCourses() {
   return (
     <React.Fragment>
       <Title>Courses</Title>
+      {/*<Container style={{ height: '600px' }}>*/}
+      {/*<Paper className={fixedHeightPaper}>*/}
       <div className="root-container">
         <SigmaContainer
           graphOptions={{ type: 'directed' }}
@@ -51,8 +53,6 @@ export default function DashboardCourses() {
           <SigmaGraph />
         </SigmaContainer>
       </div>
-      {/*<Container style={{ height: '600px' }}>*/}
-      {/*<Paper className={fixedHeightPaper}>*/}
       {/*</Paper>*/}
       {/*</Container>*/}
     </React.Fragment>

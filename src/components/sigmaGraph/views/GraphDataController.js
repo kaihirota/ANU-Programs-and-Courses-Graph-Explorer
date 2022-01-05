@@ -26,10 +26,6 @@ const GraphDataController = (props) => {
   useEffect(() => {
     if (!graph || !dataset) return
 
-    console.log(dataset)
-    const tags = getUniqueTags(dataset.tags)
-    console.log(tags)
-
     dataset.nodes.forEach((n) => {
       graph.addNode(n.id, n)
     })

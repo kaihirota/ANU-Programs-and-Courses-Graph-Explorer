@@ -57,7 +57,6 @@ const getTags = (nodes) => {
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index
   }
-  console.log(nodes.map((n) => n.tag))
   return nodes
     .map((n) => n.tag)
     .filter(onlyUnique)
