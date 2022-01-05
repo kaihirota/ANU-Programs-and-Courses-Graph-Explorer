@@ -38,9 +38,10 @@ export function drawHover(
   const weight = settings.labelWeight
   const subLabelSize = size - 2
 
-  const label = data.label
-  const subLabel = data.tag !== 'unknown' ? data.tag : ''
-  const clusterLabel = data.clusterLabel
+  const nodeId = data.id
+  const nodeName = data.name
+
+  const clusterLabel = data.units ? `${data.units.low} units` : ''
 
   // Then we draw the label background
   context.beginPath()
@@ -51,9 +52,9 @@ export function drawHover(
   context.shadowColor = '#000'
 
   context.font = `${weight} ${size}px ${font}`
-  const labelWidth = context.measureText(label).width
+  const labelWidth = context.measureText(nodeName).width
   context.font = `${weight} ${subLabelSize}px ${font}`
-  const subLabelWidth = subLabel ? context.measureText(subLabel).width : 0
+  const subLabelWidth = nodeId ? context.measureText(nodeId).width : 0
   context.font = `${weight} ${subLabelSize}px ${font}`
   const clusterLabelWidth = clusterLabel
     ? context.measureText(clusterLabel).width
@@ -65,7 +66,7 @@ export function drawHover(
   const y = Math.round(data.y)
   const w = Math.round(textWidth + size / 2 + data.size + 3)
   const hLabel = Math.round(size / 2 + 4)
-  const hSubLabel = subLabel ? Math.round(subLabelSize / 2 + 9) : 0
+  const hSubLabel = nodeId ? Math.round(subLabelSize / 2 + 9) : 0
   const hClusterLabel = Math.round(subLabelSize / 2 + 9)
 
   drawRoundRect(
@@ -86,13 +87,13 @@ export function drawHover(
   // And finally we draw the labels
   context.fillStyle = TEXT_COLOR
   context.font = `${weight} ${size}px ${font}`
-  context.fillText(label, data.x + data.size + 3, data.y + size / 3)
+  context.fillText(nodeName, data.x + data.size + 3, data.y + size / 3)
 
-  if (subLabel) {
+  if (nodeId) {
     context.fillStyle = TEXT_COLOR
     context.font = `${weight} ${subLabelSize}px ${font}`
     context.fillText(
-      subLabel,
+      nodeId,
       data.x + data.size + 3,
       data.y - (2 * size) / 3 - 2
     )
@@ -128,5 +129,16 @@ export default function drawLabel(
   context.fillRect(data.x + data.size, data.y + size / 3 - 15, width, 20)
 
   context.fillStyle = '#000'
-  context.fillText(data.label, data.x + data.size + 3, data.y + size / 3)
+  const labelString = data.label.toLocaleString()
+  const idx = labelString.indexOf(' ')
+  context.fillText(
+    labelString.substr(0, idx),
+    data.x + data.size + 3,
+    data.y - (2 * size) / 3 - 2
+  )
+  context.fillText(
+    labelString.substr(idx).trim(),
+    data.x + data.size + 3,
+    data.y + size / 3
+  )
 }
