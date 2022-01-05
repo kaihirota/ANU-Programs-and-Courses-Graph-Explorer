@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ZoomControl } from 'react-sigma-v2'
-import { constant, keyBy, mapValues, omit } from 'lodash'
+import { constant, keyBy, mapValues, omit, zip } from 'lodash'
 import chroma from 'chroma-js'
 
 import GraphSettingsController from './views/GraphSettingsController'
@@ -51,13 +51,18 @@ const getTags = (nodes) => {
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index
   }
+  const tags = nodes.map((n) => n.tag).filter(onlyUnique)
+  const colors = chroma.scale('Spectral').colors(10)
+  let ret = new Array(tags.length)
+  for (let i = 0; i < tags.length; i++) {
+    ret[i] = {
+      key: tags[i],
+      color: colors[i % 10],
+    }
+  }
+  console.log(ret)
 
-  return nodes
-    .map((n) => n.tag)
-    .filter(onlyUnique)
-    .map((s) => {
-      return { key: s, color: chroma.random().hex() }
-    })
+  return ret
 }
 
 const SigmaGraph = () => {
