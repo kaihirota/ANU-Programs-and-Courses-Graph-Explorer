@@ -1,6 +1,7 @@
 # ANU Programs & Courses Graph Explorer
 
 ![](img/1.jpg)
+![](img/2.jpg)
 
 ## Quickstart
 
