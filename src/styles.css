@@ -23,12 +23,6 @@
  * BASE STYLES:
  * ************
  */
-body {
-    font-family: "Public Sans", sans-serif;
-    background: white;
-    font-size: 0.9em;
-    overflow: auto;
-}
 
 h1,
 h2 {
@@ -56,16 +50,19 @@ a:hover {
  * LAYOUT:
  * *******
  */
-body {
+.graph-container {
+    font-family: "Public Sans", sans-serif;
+    background: white;
+    font-size: 0.9em;
     margin: 0;
     padding: 0;
 }
 
-/*#root-container {*/
-/*    width: 100vw;*/
-/*    height: 100vh;*/
-/*    position: relative;*/
-/*}*/
+#root {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
 
 /*#app-root,*/
 /*.sigma-container {*/
@@ -102,8 +99,10 @@ body {
 }
 
 .panels {
-    position: absolute;
-    bottom: 0;
+    z-index: 1;
+    position: fixed;
+    margin-top: 80px;
+    top: 0;
     right: 0;
     width: 350px;
     max-height: calc(100vh - 2 * var(--stage-padding));

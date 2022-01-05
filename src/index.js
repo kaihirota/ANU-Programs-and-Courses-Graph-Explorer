@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
+import './styles.css'
 import App from './App'
-import registerServiceWorker, { unregister } from './registerServiceWorker'
+import registerServiceWorker from './registerServiceWorker'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 
 const client = new ApolloClient({
