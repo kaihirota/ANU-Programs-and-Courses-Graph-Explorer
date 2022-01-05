@@ -20,7 +20,11 @@ const GraphEventsController = (props) => {
     registerEvents({
       clickNode({ node }) {
         if (!graph.getNodeAttribute(node, 'hidden')) {
-          window.open(graph.getNodeAttribute(node, 'URL'), '_blank')
+          window.open(
+            'https://programsandcourses.anu.edu.au/course/' +
+              graph.getNodeAttribute(node, 'id'),
+            '_blank'
+          )
         }
       },
       enterNode({ node }) {
