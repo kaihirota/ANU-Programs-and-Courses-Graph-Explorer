@@ -7,8 +7,6 @@ export const getUniqueClasses = (classes) => {
       obj[cls.id] = cls
     })
   return Object.keys(obj)
-    .map((id) => {
-      return obj[id]
-    })
+    .map((id) => obj[id])
     .sort((a, b) => a.id.localeCompare(b.id))
 }
