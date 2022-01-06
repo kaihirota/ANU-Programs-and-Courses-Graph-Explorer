@@ -30,6 +30,7 @@
     "react": "^17.0.1",
     "react-animate-height": "^2.0.23",
     "react-dom": "^17.0.1",
+    "react-github-btn": "^1.2.1",
     "react-icons": "^4.3.1",
     "react-resize-aware": "^3.0.1",
     "react-router": "^5.1.2",

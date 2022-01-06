@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
-
+import GitHubButton from 'react-github-btn'
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -61,12 +61,22 @@ function Footer() {
         component="span"
         sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
-        <MUILink color="inherit" href="https://khirota.co/">
-          <HomeIcon fontSize="small" href="https://khirota.co/" />
+        <MUILink
+          color="inherit"
+          href="https://khirota.co/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <HomeIcon fontSize="small" />
         </MUILink>
-        <MUILink color="inherit" href="https://github.com/from81/">
-          <GitHubIcon fontSize="small" href="https://khirota.co/" />
-        </MUILink>
+        <GitHubButton
+          href="https://github.com/from81/ANU-Programs-and-Courses-Graph-Explorer"
+          data-show-count="true"
+          aria-label="Star from81/ANU-Programs-and-Courses-Graph-Explorer on GitHub"
+          sx={{ marginLeft: '1em' }}
+        >
+          Star
+        </GitHubButton>
       </Box>
     </>
   )

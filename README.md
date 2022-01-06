@@ -3,10 +3,9 @@
 ![](img/1.jpg)
 ![](img/2.jpg)
 
-Most of the data visualisation code is taken from https://github.com/jacomyal/sigma.js/tree/main/demo 
+Most of the data visualisation code is taken from https://github.com/jacomyal/sigma.js/tree/main/demo
 
 ## Quickstart
-
 
 Install dependencies:
 
@@ -23,6 +22,7 @@ npm start
 This will serve the app on `http://localhost:3000`
 
 ---
+
 To build with Docker,
 
 ```
