@@ -16,6 +16,7 @@ import { GrClose } from 'react-icons/gr'
 import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi'
 import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
 import PropTypes from 'prop-types'
+import CourseContext from './CourseContext'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -67,16 +68,17 @@ const getTags = (nodes) => {
 const SigmaGraph = (props) => {
   const { academicCareer } = props
   const [showContents, setShowContents] = useState(false)
+  const [hoveredNode, setHoveredNode] = useState()
+  const [clickedNode, setClickedNode] = useState('')
+  const [dataReady, setDataReady] = useState(false)
+  const [filtersState, setFiltersState] = useState({
+    tags: {},
+  })
   const [dataset, setDataset] = useState({
     nodes: [],
     edges: [],
     tags: [],
   })
-  const [dataReady, setDataReady] = useState(false)
-  const [filtersState, setFiltersState] = useState({
-    tags: {},
-  })
-  const [hoveredNode, setHoveredNode] = useState()
 
   useEffect(() => {
     const session = driver.session({ defaultAccessMode: neo4j.session.READ })
@@ -110,78 +112,79 @@ const SigmaGraph = (props) => {
       .then(() => session.close())
   }, [academicCareer])
 
-  // useEffect(() => {
-  //   console.log(dataset)
-  // }, [dataset])
-
   return (
     <div className={showContents ? 'show-contents' : ''}>
-      <GraphSettingsController hoveredNode={hoveredNode} />
-      <GraphEventsController setHoveredNode={setHoveredNode} />
-      <GraphDataController dataset={dataset} filters={filtersState} />
+      <CourseContext.Provider value={{ clickedNode: clickedNode }}>
+        <GraphSettingsController hoveredNode={hoveredNode} />
+        <GraphEventsController
+          setHoveredNode={setHoveredNode}
+          setClickedNode={setClickedNode}
+        />
+        <GraphDataController dataset={dataset} filters={filtersState} />
 
-      {dataReady && (
-        <>
-          <div className="controls">
-            <div className="ico">
-              <button
-                type="button"
-                className="show-contents"
-                onClick={() => setShowContents(true)}
-                title="Show caption and description"
-              >
-                <BiBookContent />
-              </button>
-            </div>
-            {/*<FullScreenControl*/}
-            {/*  className="ico"*/}
-            {/*  customEnterFullScreen={<BsArrowsFullscreen />}*/}
-            {/*  customExitFullScreen={<BsFullscreenExit />}*/}
-            {/*/>*/}
-            <ZoomControl
-              className="ico"
-              customZoomIn={<BsZoomIn />}
-              customZoomOut={<BsZoomOut />}
-              customZoomCenter={<BiRadioCircleMarked />}
-            />
-          </div>
-          <div className="contents">
-            <div className="ico">
-              <button
-                type="button"
-                className="ico hide-contents"
-                onClick={() => setShowContents(false)}
-                title="Show caption and description"
-              >
-                <GrClose />
-              </button>
-            </div>
-            <GraphTitle filters={filtersState} />
-            <div className="panels">
-              <SearchField filters={filtersState} />
-              <DescriptionPanel />
-              <TagsPanel
-                tags={dataset.tags}
-                filters={filtersState}
-                setTags={(tags) =>
-                  setFiltersState((filters) => ({
-                    ...filters,
-                    tags,
-                  }))
-                }
-                toggleTag={(tag) => {
-                  setFiltersState((filters) => ({
-                    ...filters,
-                    tags: filters.tags[tag]
-                      ? omit(filters.tags, tag)
-                      : { ...filters.tags, [tag]: true },
-                  }))
-                }}
+        {dataReady && (
+          <>
+            <div className="controls">
+              <div className="ico">
+                <button
+                  type="button"
+                  className="show-contents"
+                  onClick={() => setShowContents(true)}
+                  title="Show caption and description"
+                >
+                  <BiBookContent />
+                </button>
+              </div>
+              {/*<FullScreenControl*/}
+              {/*  className="ico"*/}
+              {/*  customEnterFullScreen={<BsArrowsFullscreen />}*/}
+              {/*  customExitFullScreen={<BsFullscreenExit />}*/}
+              {/*/>*/}
+              <ZoomControl
+                className="ico"
+                customZoomIn={<BsZoomIn />}
+                customZoomOut={<BsZoomOut />}
+                customZoomCenter={<BiRadioCircleMarked />}
               />
             </div>
-          </div>
-        </>
-      )}
+            <div className="contents">
+              <div className="ico">
+                <button
+                  type="button"
+                  className="ico hide-contents"
+                  onClick={() => setShowContents(false)}
+                  title="Show caption and description"
+                >
+                  <GrClose />
+                </button>
+              </div>
+              <GraphTitle filters={filtersState} />
+              <div className="panels">
+                <SearchField filters={filtersState} />
+                <DescriptionPanel />
+                <TagsPanel
+                  tags={dataset.tags}
+                  filters={filtersState}
+                  setTags={(tags) =>
+                    setFiltersState((filters) => ({
+                      ...filters,
+                      tags,
+                    }))
+                  }
+                  toggleTag={(tag) => {
+                    setFiltersState((filters) => ({
+                      ...filters,
+                      tags: filters.tags[tag]
+                        ? omit(filters.tags, tag)
+                        : { ...filters.tags, [tag]: true },
+                    }))
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </CourseContext.Provider>
     </div>
   )
 }

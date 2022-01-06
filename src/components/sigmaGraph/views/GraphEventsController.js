@@ -1,13 +1,14 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useContext, useEffect } from 'react'
 import { useRegisterEvents, useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
+import CourseContext from '../CourseContext'
 
 function getMouseLayer() {
   return document.querySelector('.sigma-mouse')
 }
 
 const GraphEventsController = (props) => {
-  const { setHoveredNode, children } = props
+  const { setHoveredNode, setClickedNode, children } = props
   const sigma = useSigma()
   const graph = sigma.getGraph()
   const registerEvents = useRegisterEvents()
@@ -19,6 +20,11 @@ const GraphEventsController = (props) => {
   useEffect(() => {
     registerEvents({
       clickNode({ node }) {
+        if (!graph.getNodeAttribute(node, 'hidden')) {
+          setClickedNode(node)
+        }
+      },
+      doubleClickNode({ node }) {
         if (!graph.getNodeAttribute(node, 'hidden')) {
           window.open(
             'https://programsandcourses.anu.edu.au/course/' +
@@ -46,6 +52,7 @@ const GraphEventsController = (props) => {
 }
 GraphEventsController.propTypes = {
   setHoveredNode: PropTypes.func,
+  setClickedNode: PropTypes.func,
   children: PropTypes.node,
 }
 export default GraphEventsController
