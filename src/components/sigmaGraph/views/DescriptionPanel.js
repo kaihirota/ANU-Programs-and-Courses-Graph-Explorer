@@ -54,6 +54,7 @@ const DescriptionContent = (props) => {
     )
   } else {
     const attrs = graph.getNodeAttributes(selectedNode)
+    const nextLevelClasses = graph.inNeighbors(selectedNode).sort()
     return (
       <>
         <p>
@@ -72,6 +73,8 @@ const DescriptionContent = (props) => {
           <br />
           Course Convener: {attrs.course_convener}
           <br />
+          Co-taught: {attrs.co_taught}
+          <br />
         </p>
         <p>
           <b>Description:</b>
@@ -83,6 +86,20 @@ const DescriptionContent = (props) => {
           <br />
           {attrs.prerequisites_raw || 'None'}
         </p>
+        <b>Prerequisite of:</b>
+        <ul>
+          {nextLevelClasses.map((c) => (
+            <li key={c}>
+              <a
+                href={`https://programsandcourses.anu.edu.au/course/${c}`}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {c}
+              </a>
+            </li>
+          ))}
+        </ul>
         <hr />
         <p>
           <a
