@@ -3,6 +3,8 @@
 ![](img/1.jpg)
 ![](img/2.jpg)
 
+Most of the data visualisation code is taken from https://github.com/jacomyal/sigma.js/tree/main/demo 
+
 ## Quickstart
 
 
