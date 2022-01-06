@@ -40,7 +40,7 @@ const DescriptionContent = (props) => {
           >
             here
           </a>
-          , or the source code for this website
+          , or the source code for this website{' '}
           <a
             target="_blank"
             rel="noreferrer"
