@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { FormControlLabel } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
 import './graph.css'
-import UserContext from '../UserContext'
+import { SelectedProgramContext, SelectedCourseRowContext } from '../contexts'
 import Switch from '@mui/material/Switch'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
@@ -11,7 +11,8 @@ const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 const CompletionEvent = 'completed'
 
 export default function ProgramGraphs() {
-  const user = useContext(UserContext)
+  const selectedProgramContext = useContext(SelectedProgramContext)
+  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
   const [loading, setLoading] = useState(false)
   const [hierarchicalSort, setHierarchicalSort] = useState(false)
 
@@ -63,10 +64,10 @@ export default function ProgramGraphs() {
   }
 
   useEffect(() => {
-    if (user && user.program !== '') {
-      drawGraph(user.program)
+    if (selectedProgramContext && selectedProgramContext.program !== '') {
+      drawGraph(selectedProgramContext.program)
     }
-  }, [user, hierarchicalSort])
+  }, [selectedProgramContext, hierarchicalSort])
 
   const handleChange = (e) => {
     setHierarchicalSort(e.target.checked)

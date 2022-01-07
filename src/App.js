@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 
@@ -27,7 +27,7 @@ import {
 import SchoolIcon from '@material-ui/icons/School'
 import DashboardPrograms from './components/DashboardPrograms'
 import dotenv from 'dotenv'
-import UserContext from './UserContext'
+import { SelectedProgramContext, SelectedCourseRowContext } from './contexts'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import HomeIcon from '@mui/icons-material/Home'
 import GolfCourseIcon from '@material-ui/icons/GolfCourse'
@@ -162,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function App() {
-  const classes = useStyles()
+  const styles = useStyles()
   const [open, setOpen] = React.useState(false)
 
   const handleDrawerOpen = () => {
@@ -172,32 +172,23 @@ export default function App() {
     setOpen(false)
   }
 
-  const saveUserContext = (values) => {
-    setUserContext(values)
-  }
-  const [userContext, setUserContext] = useState({
-    program: '',
-    coursesTaken: [],
-    saveUserContext: saveUserContext,
-  })
-
   return (
     <Router>
-      <div className={classes.root}>
+      <div className={styles.root}>
         <CssBaseline />
         <AppBar
           position="absolute"
-          className={clsx(classes.appBar, open && classes.appBarShift)}
+          className={clsx(styles.appBar, open && styles.appBarShift)}
         >
-          <Toolbar className={classes.toolbar}>
+          <Toolbar className={styles.toolbar}>
             <IconButton
               edge="start"
               color="inherit"
               aria-label="open drawer"
               onClick={handleDrawerOpen}
               className={clsx(
-                classes.menuButton,
-                open && classes.menuButtonHidden
+                styles.menuButton,
+                open && styles.menuButtonHidden
               )}
             >
               <MenuIcon />
@@ -207,7 +198,7 @@ export default function App() {
               variant="h6"
               color="inherit"
               noWrap
-              className={classes.title}
+              className={styles.title}
             >
               ANU Programs and Courses Graph Explorer
             </Typography>
@@ -216,18 +207,18 @@ export default function App() {
         <Drawer
           variant="permanent"
           classes={{
-            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+            paper: clsx(styles.drawerPaper, !open && styles.drawerPaperClose),
           }}
           open={open}
         >
-          <div className={classes.toolbarIcon}>
+          <div className={styles.toolbarIcon}>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
           <Divider />
           <List>
-            <Link to="/" className={classes.navLink}>
+            <Link to="/" className={styles.navLink}>
               <ListItem button>
                 <ListItemIcon>
                   <GolfCourseIcon />
@@ -235,7 +226,7 @@ export default function App() {
                 <ListItemText primary="Programs" />
               </ListItem>
             </Link>
-            <Link to="/courses" className={classes.navLink}>
+            <Link to="/courses" className={styles.navLink}>
               <ListItem button>
                 <ListItemIcon>
                   <SchoolIcon />
@@ -246,15 +237,13 @@ export default function App() {
           </List>
           <Divider />
         </Drawer>
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <UserContext.Provider value={userContext}>
-              <Switch>
-                <Route exact path="/" component={DashboardPrograms} />
-                <Route exact path="/courses" component={DashboardCourses} />
-              </Switch>
-            </UserContext.Provider>
+        <main className={styles.content}>
+          <div className={styles.appBarSpacer} />
+          <Container maxWidth="lg" className={styles.container}>
+            <Switch>
+              <Route exact path="/" component={DashboardPrograms} />
+              <Route exact path="/courses" component={DashboardCourses} />
+            </Switch>
             <Box pt={4}>
               <Footer />
             </Box>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import { ZoomControl } from 'react-sigma-v2'
 import { constant, keyBy, mapValues, omit, zip } from 'lodash'
 import chroma from 'chroma-js'
@@ -16,7 +16,7 @@ import { GrClose } from 'react-icons/gr'
 import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi'
 import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
 import PropTypes from 'prop-types'
-import CourseContext from './CourseContext'
+import { SelectedCourseNodeContext } from '../../contexts'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -114,7 +114,7 @@ const SigmaGraph = (props) => {
 
   return (
     <div className={showContents ? 'show-contents' : ''}>
-      <CourseContext.Provider value={{ clickedNode: clickedNode }}>
+      <SelectedCourseNodeContext.Provider value={{ clickedNode: clickedNode }}>
         <GraphSettingsController hoveredNode={hoveredNode} />
         <GraphEventsController
           setHoveredNode={setHoveredNode}
@@ -184,7 +184,7 @@ const SigmaGraph = (props) => {
             </div>
           </>
         )}
-      </CourseContext.Provider>
+      </SelectedCourseNodeContext.Provider>
     </div>
   )
 }

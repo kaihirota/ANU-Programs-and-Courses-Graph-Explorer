@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { gql, useLazyQuery } from '@apollo/client'
-import UserContext from '../UserContext'
+import { SelectedProgramContext, SelectedCourseRowContext } from '../contexts'
 import { getUniqueClasses } from '../utils'
 import {
   Box,
@@ -21,7 +21,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 export default function CourseTable() {
-  const user = useContext(UserContext)
+  const selectedProgramContext = useContext(SelectedProgramContext)
+  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
   const QUERY_PROGRAM_CLASSES = gql`
     query programs($id: ID!) {
       programs(where: { id: $id }) {
@@ -42,9 +43,8 @@ export default function CourseTable() {
     QUERY_PROGRAM_CLASSES
   )
   const [classes, setClasses] = useState([])
-  const [selectedClasses, setSelectedClasses] = useState([])
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
   function Row(props) {
     const { row, selected } = props
@@ -52,10 +52,23 @@ export default function CourseTable() {
     const [isSelected, setIsSelected] = useState(selected)
 
     const updateSelectedClasses = (checked, classId) => {
-      if (checked && !selectedClasses.includes(classId)) {
-        setSelectedClasses([...selectedClasses, classId])
-      } else if (!checked && selectedClasses.includes(classId)) {
-        setSelectedClasses(selectedClasses.filter((c) => c !== classId))
+      if (checked && !selectedCourseRowContext.coursesTaken.includes(classId)) {
+        selectedCourseRowContext.saveSelectedCourseRowContext({
+          saveSelectedCourseRowContext:
+            selectedCourseRowContext.saveSelectedCourseRowContext,
+          coursesTaken: [...selectedCourseRowContext.coursesTaken, classId],
+        })
+      } else if (
+        !checked &&
+        selectedCourseRowContext.coursesTaken.includes(classId)
+      ) {
+        selectedCourseRowContext.saveSelectedCourseRowContext({
+          saveSelectedCourseRowContext:
+            selectedCourseRowContext.saveSelectedCourseRowContext,
+          coursesTaken: selectedCourseRowContext.coursesTaken.filter(
+            (c) => c !== classId
+          ),
+        })
       }
     }
 
@@ -146,14 +159,27 @@ export default function CourseTable() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - classes.length) : 0
 
   useEffect(async () => {
-    await getClasses({ variables: { id: user.program } })
-  }, [user])
+    await getClasses({ variables: { id: selectedProgramContext.program } })
+  }, [selectedProgramContext])
 
   useEffect(() => {
     if (data && data.programs && data.programs.length > 0) {
-      setClasses(getUniqueClasses(data.programs[0].classes))
+      let classes = getUniqueClasses(data.programs[0].classes)
+      if (
+        selectedCourseRowContext.coursesTaken &&
+        selectedCourseRowContext.coursesTaken.length > 0
+      ) {
+        const selected = classes.filter((c) =>
+          selectedCourseRowContext.coursesTaken.includes(c.id)
+        )
+        const notSelected = classes.filter(
+          (c) => !selectedCourseRowContext.coursesTaken.includes(c.id)
+        )
+        classes = selected.concat(notSelected)
+      }
+      setClasses(classes)
     }
-  }, [data])
+  }, [data, selectedCourseRowContext])
 
   return (
     <React.Fragment>
@@ -181,7 +207,9 @@ export default function CourseTable() {
                       <Row
                         key={row.id}
                         row={row}
-                        selected={selectedClasses.includes(row.id)}
+                        selected={selectedCourseRowContext.coursesTaken.includes(
+                          row.id
+                        )}
                       />
                     )
                   })}
@@ -199,7 +227,7 @@ export default function CourseTable() {
         </TableContainer>
       )}
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[10, 25, 50]}
         component={'div'}
         count={classes.length}
         rowsPerPage={rowsPerPage}

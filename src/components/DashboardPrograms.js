@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { Container, Paper, TextField } from '@material-ui/core'
 import clsx from 'clsx'
@@ -7,7 +7,7 @@ import ProgramGraphs from './ProgramGraphs'
 import CourseTable from './CourseTable'
 import { gql, useQuery } from '@apollo/client'
 import Title from './Title'
-import UserContext from '../UserContext'
+import { SelectedCourseRowContext, SelectedProgramContext } from '../contexts'
 import { Autocomplete } from '@mui/material'
 
 const QUERY_GET_PROGRAMS = gql`
@@ -45,9 +45,11 @@ const getUniquePrograms = (programs) => {
 }
 
 export default function DashboardPrograms() {
+  const selectedProgramContext = useContext(SelectedProgramContext)
+  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
   const theme = useTheme()
   const fixedHeightPaper = clsx(useStyles(theme).paper)
-  const user = useContext(UserContext)
+
   const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
   if (error) return <p>Error</p>
   if (loading) return <p>Loading</p>
@@ -55,25 +57,34 @@ export default function DashboardPrograms() {
   const programs = getUniquePrograms(data.programs)
 
   const updateContext = (e) => {
-    if (e.target.textContent) {
-      const [programName, programId] = e.target.textContent.split(' - ')
-      if (programId && programId !== '') {
-        user.saveUserContext({
-          program: programId,
-          saveUserContext: user.saveUserContext,
-        })
-      }
-    } else if (e.target.value) {
-      const [programName, programId] = e.target.textContent.split(' - ')
-      if (programId && programId !== '') {
-        user.saveUserContext({
-          program: programId,
-          saveUserContext: user.saveUserContext,
-        })
-      }
+    const selectedProgram = e.target.textContent
+      ? e.target.textContent
+      : e.target.value
+    const [programName, programId] = selectedProgram.split(' - ')
+
+    if (programId && programId !== '') {
+      // update selected program context
+      selectedProgramContext.saveSelectedProgramContext({
+        program: programId,
+        saveSelectedProgramContext:
+          selectedProgramContext.saveSelectedProgramContext,
+      })
+      // when new program is selected, clear selected classes
+      selectedCourseRowContext.saveSelectedCourseRowContext({
+        coursesTaken: [],
+        saveSelectedCourseRowContext:
+          selectedCourseRowContext.saveSelectedCourseRowContext,
+      })
     }
   }
 
+  const selectedProgram = programs.filter(
+    (p) => p.id === selectedProgramContext.program
+  )
+  const label =
+    selectedProgram && selectedProgram.length > 0
+      ? `${selectedProgram[0].name} - ${selectedProgramContext.program}`
+      : 'Program'
   return (
     <React.Fragment>
       <Container>
@@ -83,7 +94,9 @@ export default function DashboardPrograms() {
             options={programs}
             getOptionLabel={(option) => `${option.name} - ${option.id}`}
             sx={{ width: 400 }}
-            renderInput={(params) => <TextField {...params} label="Program" />}
+            renderInput={(params) => {
+              return <TextField {...params} label={label} />
+            }}
             onChange={updateContext}
             onClose={updateContext}
           />
