@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 import { circlepack } from 'graphology-layout'
@@ -7,6 +7,7 @@ const GraphDataController = (props) => {
   const { dataset, filters, children } = props
   const sigma = useSigma()
   const graph = sigma.getGraph()
+  const [clusters, setClusters] = useState({})
 
   /**
    * Feed graphology with the new dataset:
@@ -15,7 +16,9 @@ const GraphDataController = (props) => {
     if (!graph || !dataset) return
 
     dataset.nodes.forEach((n) => {
-      graph.addNode(n.id, n)
+      if (n.id && n.name) {
+        graph.addNode(n.id, n)
+      }
     })
 
     dataset.edges.forEach((edge) => {
@@ -73,6 +76,33 @@ const GraphDataController = (props) => {
     graph.forEachNode((node, { tag }) =>
       graph.setNodeAttribute(node, 'color', labelToColorMap[tag])
     )
+  }, [graph, dataset])
+
+  // calculate cluster centroids
+  useEffect(() => {
+    const { nodes, tags } = dataset
+    let newClusters = { ...clusters }
+    nodes.forEach((node) => {
+      if (node.subject in newClusters) {
+        newClusters[node.subject].positions.push({ x: node.x, y: node.y })
+      } else {
+        newClusters[node.subject] = {
+          label: node.subject,
+          color: node.color,
+          positions: [{ x: node.x, y: node.y }],
+        }
+      }
+    })
+    Object.keys(newClusters).forEach((clusterLabel) => {
+      newClusters[clusterLabel].x =
+        newClusters[clusterLabel].positions.reduce((acc, p) => acc + p.x, 0) /
+        newClusters[clusterLabel].positions.length
+      newClusters[clusterLabel].y =
+        newClusters[clusterLabel].positions.reduce((acc, p) => acc + p.y, 0) /
+        newClusters[clusterLabel].positions.length
+    })
+
+    setClusters(newClusters)
   }, [graph, dataset])
 
   /**

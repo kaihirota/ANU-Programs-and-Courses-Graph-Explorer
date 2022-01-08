@@ -17,6 +17,7 @@ import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi'
 import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
 import PropTypes from 'prop-types'
 import { SelectedCourseNodeContext } from '../../contexts'
+import { CircularProgress } from '@material-ui/core'
 
 const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
 const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
@@ -112,9 +113,15 @@ const SigmaGraph = (props) => {
       .then(() => session.close())
   }, [academicCareer])
 
+  if (!dataReady) {
+    return (
+      <CircularProgress style={{ position: 'absolute', top: 1, left: 0 }} />
+    )
+  }
+
   return (
-    <div className={showContents ? 'show-contents' : ''}>
-      <SelectedCourseNodeContext.Provider value={{ clickedNode: clickedNode }}>
+    <SelectedCourseNodeContext.Provider value={{ clickedNode: clickedNode }}>
+      <div className={showContents ? 'show-contents' : ''}>
         <GraphSettingsController hoveredNode={hoveredNode} />
         <GraphEventsController
           setHoveredNode={setHoveredNode}
@@ -184,8 +191,8 @@ const SigmaGraph = (props) => {
             </div>
           </>
         )}
-      </SelectedCourseNodeContext.Provider>
-    </div>
+      </div>
+    </SelectedCourseNodeContext.Provider>
   )
 }
 SigmaGraph.propTypes = {
