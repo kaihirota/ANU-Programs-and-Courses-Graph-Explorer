@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 import { circlepack } from 'graphology-layout'
+import { useSigmaContext } from 'react-sigma-v2/lib/esm/context'
 
 const GraphDataController = (props) => {
   const { dataset, filters, children } = props
   const sigma = useSigma()
   const graph = sigma.getGraph()
+  const sigmaContext = useSigmaContext()
   const [clusters, setClusters] = useState({})
 
   /**
@@ -104,6 +106,49 @@ const GraphDataController = (props) => {
 
     setClusters(newClusters)
   }, [graph, dataset])
+
+  useEffect(() => {
+    // const container = sigmaContext.container
+    const container = document.getElementsByClassName('sigma-container')[0]
+    console.log(container)
+    if (sigmaContext.container) {
+      // create the clustersLabel layer
+      const clustersLayer = document.createElement('div')
+      clustersLayer.id = 'clustersLayer'
+      let clusterLabelsDoms = ''
+      for (const subject in clusters) {
+        // for each cluster create a div label
+        const cluster = clusters[subject]
+        // adapt the position to viewport coordinates
+        const viewportPos = sigma.graphToViewport({
+          x: cluster.x,
+          y: cluster.y,
+        })
+        clusterLabelsDoms += `<div id='${cluster.label}' class="clusterLabel" style="top:${viewportPos.y}px;left:${viewportPos.x}px;color:${cluster.color}">${cluster.label}</div>`
+      }
+      clustersLayer.innerHTML = clusterLabelsDoms
+      // insert the layer underneath the hovers layer
+      container.insertBefore(
+        clustersLayer,
+        document.getElementsByClassName('sigma-hovers')[0]
+      )
+
+      // Clusters labels position needs to be updated on each render
+      sigma.on('afterRender', () => {
+        for (const subject in clusters) {
+          const cluster = clusters[subject]
+          const clusterLabel = document.getElementById(cluster.label)
+          // update position from the viewport
+          const viewportPos = sigma.graphToViewport({
+            x: cluster.x,
+            y: cluster.y,
+          })
+          clusterLabel.style.top = `${viewportPos.y}px`
+          clusterLabel.style.left = `${viewportPos.x}px`
+        }
+      })
+    }
+  }, [clusters])
 
   /**
    * Apply filters to graphology:
