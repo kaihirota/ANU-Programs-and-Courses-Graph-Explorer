@@ -17,14 +17,12 @@ import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
 import PropTypes from 'prop-types'
 import { SelectedCourseNodeContext } from '../../contexts'
 import { CircularProgress } from '@material-ui/core'
+import { NEO4J_PASSWORD, NEO4J_URI, NEO4J_USER } from '../../utils'
 
-const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
-const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
-const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
-  neo4jUri,
-  neo4j.auth.basic(neo4jUser, neo4jPassword)
+  NEO4J_URI,
+  neo4j.auth.basic(NEO4J_USER, NEO4J_PASSWORD)
 )
 // Close the driver when application exits.
 // This closes all used network connections.
