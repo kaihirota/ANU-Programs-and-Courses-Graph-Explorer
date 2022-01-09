@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import { ZoomControl } from 'react-sigma-v2'
-import { constant, keyBy, mapValues, omit } from 'lodash'
+import { constant, keyBy, mapValues, omit, zip } from 'lodash'
 
 import GraphSettingsController from './views/GraphSettingsController'
 import GraphEventsController from './views/GraphEventsController'
@@ -17,7 +17,14 @@ import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
 import PropTypes from 'prop-types'
 import { SelectedCourseNodeContext } from '../../contexts'
 import { CircularProgress } from '@material-ui/core'
-import { NEO4J_PASSWORD, NEO4J_URI, NEO4J_USER } from '../../utils'
+import {
+  NEO4J_PASSWORD,
+  NEO4J_URI,
+  NEO4J_USER,
+  extractLink,
+  getTags,
+  extractDataset,
+} from '../../utils'
 
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
@@ -28,7 +35,7 @@ const driver = neo4j.driver(
 // This closes all used network connections.
 // await driver.close()
 
-const query =
+const CYPHER_QUERY =
   'MATCH p=(:Course {academic_career: $academicCareer})-[:PREREQUISITE]->(:Course {academic_career: $academicCareer}) RETURN p'
 
 const extractNode = (node) => {
@@ -94,26 +101,14 @@ const SigmaGraph = (props) => {
   useEffect(() => {
     const session = driver.session({ defaultAccessMode: neo4j.session.READ })
     session
-      .run(query, { academicCareer: academicCareer })
+      .run(CYPHER_QUERY, { academicCareer: academicCareer })
       .then((result) => {
-        let nodesMap = {}
-        const edges = result.records
-          .map((item) => item.get('p'))
-          .map((item) => {
-            const edge = extractLink(item)
-            nodesMap[edge.from] = extractNode(item.start)
-            nodesMap[edge.to] = extractNode(item.end)
-            return edge
-          })
-        const nodes = Object.keys(nodesMap).map((id) => nodesMap[id])
-        const tags = getTags(nodes)
-        setDataset({
-          edges: edges,
-          nodes: nodes,
-          tags: tags,
-        })
+        console.log(result)
+        const dataset = extractDataset(result.records, extractNode)
+        console.log(dataset)
+        setDataset(dataset)
         setFiltersState({
-          tags: mapValues(keyBy(tags, 'key'), constant(true)),
+          tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
         })
         requestAnimationFrame(() => setDataReady(true))
       })
@@ -144,7 +139,7 @@ const SigmaGraph = (props) => {
   }
 
   return (
-    <SelectedCourseNodeContext.Provider value={{ clickedNode: clickedNode }}>
+    <SelectedCourseNodeContext.Provider value={clickedNode}>
       <div className={showContents ? 'show-contents' : ''}>
         <GraphSettingsController hoveredNode={hoveredNode} />
         <GraphEventsController
