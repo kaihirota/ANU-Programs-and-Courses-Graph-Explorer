@@ -1,7 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ZoomControl } from 'react-sigma-v2'
-import { constant, keyBy, mapValues, omit, zip } from 'lodash'
-import chroma from 'chroma-js'
+import { constant, keyBy, mapValues, omit } from 'lodash'
 
 import GraphSettingsController from './views/GraphSettingsController'
 import GraphEventsController from './views/GraphEventsController'
@@ -19,12 +18,11 @@ import PropTypes from 'prop-types'
 import { SelectedCourseNodeContext } from '../../contexts'
 import { CircularProgress } from '@material-ui/core'
 import {
+  extractDataset,
+  getTags,
   NEO4J_PASSWORD,
   NEO4J_URI,
   NEO4J_USER,
-  extractLink,
-  getTags,
-  extractDataset,
 } from '../../utils'
 
 const neo4j = require('neo4j-driver')
@@ -45,43 +43,6 @@ const extractNode = (node) => {
     label: `${node.properties.id} ${node.properties.name}`,
     tag: node.properties.subject,
   }
-}
-
-const extractLink = (link) => {
-  return {
-    from: link.start.properties.id,
-    to: link.end.properties.id,
-    label: link.segments[0].relationship.type,
-  }
-}
-
-const getTags = (nodes) => {
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index
-  }
-
-  const tags = nodes.map((n) => n.tag).filter(onlyUnique)
-  const COLORS = [
-    '#ff833a',
-    '#ff6659',
-    '#ff5c8d',
-    '#ae52d4',
-    '#8559da',
-    '#6f74dd',
-    '#63a4ff',
-    '#48a999',
-    '#60ad5e',
-  ]
-
-  // const colors = chroma.scale('Spectral').colors(10)
-  let ret = new Array(tags.length)
-  for (let i = 0; i < tags.length; i++) {
-    ret[i] = {
-      key: tags[i],
-      color: COLORS[i % COLORS.length],
-    }
-  }
-  return ret
 }
 
 const SigmaGraph = (props) => {
