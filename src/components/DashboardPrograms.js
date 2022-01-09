@@ -100,9 +100,7 @@ export default function DashboardPrograms() {
             onChange={updateContext}
             onClose={updateContext}
           />
-          <Title>Program Graph</Title>
           <ProgramGraphs />
-          <Title>Courses</Title>
           <CourseTable />
         </Paper>
       </Container>
