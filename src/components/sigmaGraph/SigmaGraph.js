@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react'
 import { ZoomControl } from 'react-sigma-v2'
 import { constant, keyBy, mapValues, omit, zip } from 'lodash'
+import chroma from 'chroma-js'
 
 import GraphSettingsController from './views/GraphSettingsController'
 import GraphEventsController from './views/GraphEventsController'
@@ -148,61 +149,52 @@ const SigmaGraph = (props) => {
         />
         <GraphDataController dataset={dataset} filters={filtersState} />
 
-        {dataReady && (
-          <>
-            <div className="controls">
-              <div className="ico">
-                <button
-                  type="button"
-                  className="show-contents"
-                  onClick={() => setShowContents(true)}
-                  title="Show caption and description"
-                >
-                  <BiBookContent />
-                </button>
-              </div>
-              {/*<FullScreenControl*/}
-              {/*  className="ico"*/}
-              {/*  customEnterFullScreen={<BsArrowsFullscreen />}*/}
-              {/*  customExitFullScreen={<BsFullscreenExit />}*/}
-              {/*/>*/}
-              <ZoomControl
-                className="ico"
-                customZoomIn={<BsZoomIn />}
-                customZoomOut={<BsZoomOut />}
-                customZoomCenter={<BiRadioCircleMarked />}
-              />
-            </div>
-            <div className="contents">
-              <div className="ico">
-                <button
-                  type="button"
-                  className="ico hide-contents"
-                  onClick={() => setShowContents(false)}
-                  title="Show caption and description"
-                >
-                  <GrClose />
-                </button>
-              </div>
-              <GraphTitle filters={filtersState} />
-              <div className="panels">
-                <SearchField filters={filtersState} />
-                <DescriptionPanel />
-                <TagsPanel
-                  tags={dataset.tags}
-                  filters={filtersState}
-                  setTags={(tags) =>
-                    setFiltersState((filters) => ({
-                      ...filters,
-                      tags,
-                    }))
-                  }
-                  toggleTag={toggleTag}
-                />
-              </div>
-            </div>
-          </>
-        )}
+        <div className="controls">
+          <div className="ico">
+            <button
+              type="button"
+              className="show-contents"
+              onClick={() => setShowContents(true)}
+              title="Show caption and description"
+            >
+              <BiBookContent />
+            </button>
+          </div>
+          <ZoomControl
+            className="ico"
+            customZoomIn={<BsZoomIn />}
+            customZoomOut={<BsZoomOut />}
+            customZoomCenter={<BiRadioCircleMarked />}
+          />
+        </div>
+        <div className="contents">
+          <div className="ico">
+            <button
+              type="button"
+              className="ico hide-contents"
+              onClick={() => setShowContents(false)}
+              title="Show caption and description"
+            >
+              <GrClose />
+            </button>
+          </div>
+          <GraphTitle filters={filtersState} />
+          <div className="panels">
+            <SearchField filters={filtersState} />
+            <DescriptionPanel />
+            <TagsPanel
+              tags={dataset.tags}
+              filters={filtersState}
+              setTags={(tags) =>
+                setFiltersState((filters) => ({
+                  ...filters,
+                  tags,
+                }))
+              }
+              toggleTag={toggleTag}
+            />
+          </div>
+        </div>
       </div>
     </SelectedCourseNodeContext.Provider>
   )

@@ -7,9 +7,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { gql, useLazyQuery } from '@apollo/client'
-import { SelectedCoursesContext, SelectedProgramContext } from '../contexts'
-import { getUniqueClassesSorted } from '../utils'
+import { ProgramCoursesContext, SelectedCoursesContext } from '../../contexts'
 import {
   Box,
   Checkbox,
@@ -20,33 +18,27 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
-export default function CourseTable() {
-  const { programId, setProgramId } = useContext(SelectedProgramContext)
+const CourseTable = () => {
+  const { programCourses, setProgramCourses } = useContext(
+    ProgramCoursesContext
+  )
   const { selectedCourses, setSelectedCourses } = useContext(
     SelectedCoursesContext
   )
-  const QUERY_PROGRAM_CLASSES = gql`
-    query programs($id: ID!) {
-      programs(where: { id: $id }) {
-        classes {
-          id
-          name
-          units
-          academic_career
-          college
-          course_convener
-          description
-        }
-      }
-    }
-  `
-
-  const [getClasses, { data, error, loading }] = useLazyQuery(
-    QUERY_PROGRAM_CLASSES
-  )
-  const [classes, setClasses] = useState([])
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  useEffect(() => {
+    if (selectedCourses && selectedCourses.length > 0) {
+      const selected = programCourses.filter((c) =>
+        selectedCourses.includes(c.id)
+      )
+      const notSelected = programCourses.filter(
+        (c) => !selectedCourses.includes(c.id)
+      )
+      setProgramCourses(selected.concat(notSelected))
+    }
+  }, [selectedCourses])
 
   function Row(props) {
     const { row, selected } = props
@@ -142,73 +134,53 @@ export default function CourseTable() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - classes.length) : 0
-
-  useEffect(async () => {
-    await getClasses({ variables: { id: programId } })
-  }, [programId])
-
-  useEffect(() => {
-    if (data && data.programs && data.programs.length > 0) {
-      let classes = getUniqueClassesSorted(data.programs[0].classes)
-      if (selectedCourses && selectedCourses.length > 0) {
-        const selected = classes.filter((c) => selectedCourses.includes(c.id))
-        const notSelected = classes.filter(
-          (c) => !selectedCourses.includes(c.id)
-        )
-        classes = selected.concat(notSelected)
-      }
-      setClasses(classes)
-    }
-  }, [data, selectedCourses])
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - programCourses.length) : 0
 
   return (
     <React.Fragment>
-      {!loading && !error && (
-        <TableContainer component={Paper}>
-          <Table aria-label="collapsible table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Completed</TableCell>
-                <TableCell>ID</TableCell>
-                <TableCell align="right">Name</TableCell>
-                <TableCell align="right">Units</TableCell>
-                <TableCell align="right">Academic Career</TableCell>
-                <TableCell align="right">College</TableCell>
-                <TableCell align="right">Convener</TableCell>
-                <TableCell />
+      <TableContainer component={Paper}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Completed</TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell align="right">Name</TableCell>
+              <TableCell align="right">Units</TableCell>
+              <TableCell align="right">Academic Career</TableCell>
+              <TableCell align="right">College</TableCell>
+              <TableCell align="right">Convener</TableCell>
+              <TableCell />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {programCourses.length > 0 &&
+              programCourses
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  return (
+                    <Row
+                      key={row.id}
+                      row={row}
+                      selected={selectedCourses.includes(row.id)}
+                    />
+                  )
+                })}
+            {emptyRows > 0 && (
+              <TableRow
+                style={{
+                  height: 53 * emptyRows,
+                }}
+              >
+                <TableCell colSpan={9} />
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {classes.length > 0 &&
-                classes
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <Row
-                        key={row.id}
-                        row={row}
-                        selected={selectedCourses.includes(row.id)}
-                      />
-                    )
-                  })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={9} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 50]}
         component={'div'}
-        count={classes.length}
+        count={programCourses.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -217,3 +189,5 @@ export default function CourseTable() {
     </React.Fragment>
   )
 }
+
+export default CourseTable
