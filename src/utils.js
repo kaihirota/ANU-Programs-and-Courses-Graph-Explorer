@@ -1,4 +1,3 @@
-import chroma from 'chroma-js'
 import { gql } from '@apollo/client'
 
 export const NEO4J_URI = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
@@ -48,17 +47,30 @@ export const extractLink = (segment) => {
   }
 }
 
-export const getTags = (nodes) => {
+const getTags = (nodes) => {
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index
   }
+
   const tags = nodes.map((n) => n.tag).filter(onlyUnique)
-  const colors = chroma.scale('Spectral').colors(10)
+  const COLORS = [
+    '#ff833a',
+    '#ff6659',
+    '#ff5c8d',
+    '#ae52d4',
+    '#8559da',
+    '#6f74dd',
+    '#63a4ff',
+    '#48a999',
+    '#60ad5e',
+  ]
+
+  // const colors = chroma.scale('Spectral').colors(10)
   let ret = new Array(tags.length)
   for (let i = 0; i < tags.length; i++) {
     ret[i] = {
       key: tags[i],
-      color: colors[i % 10],
+      color: COLORS[i % COLORS.length],
     }
   }
   return ret
