@@ -8,8 +8,8 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { gql, useLazyQuery } from '@apollo/client'
-import { SelectedProgramContext, SelectedCourseRowContext } from '../contexts'
-import { getUniqueClasses } from '../utils'
+import { SelectedCoursesContext, SelectedProgramContext } from '../contexts'
+import { getUniqueClassesSorted } from '../utils'
 import {
   Box,
   Checkbox,
@@ -21,8 +21,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 export default function CourseTable() {
-  const selectedProgramContext = useContext(SelectedProgramContext)
-  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
+  const { programId, setProgramId } = useContext(SelectedProgramContext)
+  const { selectedCourses, setSelectedCourses } = useContext(
+    SelectedCoursesContext
+  )
   const QUERY_PROGRAM_CLASSES = gql`
     query programs($id: ID!) {
       programs(where: { id: $id }) {
@@ -51,30 +53,14 @@ export default function CourseTable() {
     const [open, setOpen] = useState(false)
     const [isSelected, setIsSelected] = useState(selected)
 
-    const updateSelectedClasses = (checked, classId) => {
-      if (checked && !selectedCourseRowContext.coursesTaken.includes(classId)) {
-        selectedCourseRowContext.saveSelectedCourseRowContext({
-          saveSelectedCourseRowContext:
-            selectedCourseRowContext.saveSelectedCourseRowContext,
-          coursesTaken: [...selectedCourseRowContext.coursesTaken, classId],
-        })
-      } else if (
-        !checked &&
-        selectedCourseRowContext.coursesTaken.includes(classId)
-      ) {
-        selectedCourseRowContext.saveSelectedCourseRowContext({
-          saveSelectedCourseRowContext:
-            selectedCourseRowContext.saveSelectedCourseRowContext,
-          coursesTaken: selectedCourseRowContext.coursesTaken.filter(
-            (c) => c !== classId
-          ),
-        })
-      }
-    }
-
     const handleClick = (event) => {
+      const classId = row.id
       setIsSelected(event.target.checked)
-      updateSelectedClasses(event.target.checked, row.id)
+      if (event.target.checked && !selectedCourses.includes(classId)) {
+        setSelectedCourses([...selectedCourses, classId])
+      } else if (!event.target.checked && selectedCourses.includes(classId)) {
+        setSelectedCourses(selectedCourses.filter((c) => c !== classId))
+      }
     }
 
     return (
@@ -159,27 +145,22 @@ export default function CourseTable() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - classes.length) : 0
 
   useEffect(async () => {
-    await getClasses({ variables: { id: selectedProgramContext.program } })
-  }, [selectedProgramContext])
+    await getClasses({ variables: { id: programId } })
+  }, [programId])
 
   useEffect(() => {
     if (data && data.programs && data.programs.length > 0) {
-      let classes = getUniqueClasses(data.programs[0].classes)
-      if (
-        selectedCourseRowContext.coursesTaken &&
-        selectedCourseRowContext.coursesTaken.length > 0
-      ) {
-        const selected = classes.filter((c) =>
-          selectedCourseRowContext.coursesTaken.includes(c.id)
-        )
+      let classes = getUniqueClassesSorted(data.programs[0].classes)
+      if (selectedCourses && selectedCourses.length > 0) {
+        const selected = classes.filter((c) => selectedCourses.includes(c.id))
         const notSelected = classes.filter(
-          (c) => !selectedCourseRowContext.coursesTaken.includes(c.id)
+          (c) => !selectedCourses.includes(c.id)
         )
         classes = selected.concat(notSelected)
       }
       setClasses(classes)
     }
-  }, [data, selectedCourseRowContext])
+  }, [data, selectedCourses])
 
   return (
     <React.Fragment>
@@ -207,9 +188,7 @@ export default function CourseTable() {
                       <Row
                         key={row.id}
                         row={row}
-                        selected={selectedCourseRowContext.coursesTaken.includes(
-                          row.id
-                        )}
+                        selected={selectedCourses.includes(row.id)}
                       />
                     )
                   })}

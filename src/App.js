@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import GitHubButton from 'react-github-btn'
@@ -27,7 +27,6 @@ import {
 import SchoolIcon from '@material-ui/icons/School'
 import DashboardPrograms from './components/DashboardPrograms'
 import dotenv from 'dotenv'
-import { SelectedProgramContext, SelectedCourseRowContext } from './contexts'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import HomeIcon from '@mui/icons-material/Home'
 import GolfCourseIcon from '@material-ui/icons/GolfCourse'
@@ -173,7 +172,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App() {
   const styles = useStyles()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
 
   const handleDrawerOpen = () => {
     setOpen(true)

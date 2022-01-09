@@ -2,26 +2,23 @@ import React, { useContext, useEffect, useState } from 'react'
 import { FormControlLabel } from '@material-ui/core'
 import Neovis from 'neovis.js/dist/neovis.js'
 import './graph.css'
-import { SelectedProgramContext, SelectedCourseRowContext } from '../contexts'
+import { SelectedProgramContext } from '../contexts'
 import Switch from '@mui/material/Switch'
+import { NEO4J_PASSWORD, NEO4J_URI, NEO4J_USER } from '../utils'
 
-const neo4jUri = process.env.REACT_APP_NEO4J_URI || 'localhost:7687'
-const neo4jUser = process.env.REACT_APP_NEO4J_USER || 'neo4j'
-const neo4jPassword = process.env.REACT_APP_NEO4J_PASSWORD || 'neo4j'
 const CompletionEvent = 'completed'
 
 export default function ProgramGraphs() {
-  const selectedProgramContext = useContext(SelectedProgramContext)
-  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
+  const { programId, setProgramId } = useContext(SelectedProgramContext)
   const [loading, setLoading] = useState(false)
   const [hierarchicalSort, setHierarchicalSort] = useState(false)
 
   const drawGraph = (program_id) => {
     const config = {
       container_id: 'graph-vis',
-      server_url: neo4jUri,
-      server_user: neo4jUser,
-      server_password: neo4jPassword,
+      server_url: NEO4J_URI,
+      server_user: NEO4J_USER,
+      server_password: NEO4J_PASSWORD,
       labels: {
         Course: {
           caption: 'id',
@@ -64,10 +61,10 @@ export default function ProgramGraphs() {
   }
 
   useEffect(() => {
-    if (selectedProgramContext && selectedProgramContext.program !== '') {
-      drawGraph(selectedProgramContext.program)
+    if (programId && programId !== '') {
+      drawGraph(programId)
     }
-  }, [selectedProgramContext, hierarchicalSort])
+  }, [programId, hierarchicalSort])
 
   const handleChange = (e) => {
     setHierarchicalSort(e.target.checked)
