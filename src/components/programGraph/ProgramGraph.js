@@ -11,6 +11,9 @@ import {
 } from '../../utils'
 import { ProgramCoursesContext, SelectedProgramContext } from '../../contexts'
 import CourseTable from './CourseTable'
+import GraphSettingsController from '../sigmaGraph/views/GraphSettingsController'
+import EventsController from './EventsController'
+import { drawHoverForProgram } from '../sigmaGraph/canvas-utils'
 
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
@@ -76,11 +79,14 @@ export default function ProgramGraph() {
   return (
     <React.Fragment>
       <div className="graph-container">
-        {/*<GraphSettingsController hoveredNode={hoveredNode} />*/}
-        {/*<GraphEventsController*/}
-        {/*  setHoveredNode={setHoveredNode}*/}
-        {/*  setClickedNode={setClickedNode}*/}
-        {/*/>*/}
+        <GraphSettingsController
+          hoveredNode={hoveredNode}
+          drawHover={drawHoverForProgram}
+        />
+        <EventsController
+          setHoveredNode={setHoveredNode}
+          setClickedNode={setClickedNode}
+        />
         <DataController dataset={dataset} />
       </div>
     </React.Fragment>

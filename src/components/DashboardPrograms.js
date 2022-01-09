@@ -14,7 +14,7 @@ import Title from './Title'
 import { Autocomplete } from '@mui/material'
 import { getUniquePrograms, QUERY_GET_PROGRAMS } from '../utils'
 import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
-import drawLabel from './sigmaGraph/canvas-utils'
+import { drawLabelForProgramGraph } from './sigmaGraph/canvas-utils'
 import { SigmaContainer } from 'react-sigma-v2'
 import {
   ProgramCoursesContext,
@@ -97,12 +97,12 @@ export default function DashboardPrograms() {
                   style={{ height: '600px', width: '100%' }}
                   initialSettings={{
                     nodeProgramClasses: { image: getNodeImageProgram() },
-                    labelRenderer: drawLabel,
+                    labelRenderer: drawLabelForProgramGraph,
                     defaultNodeType: 'image',
                     defaultEdgeType: 'arrow',
                     labelDensity: 0.07,
                     labelGridCellSize: 60,
-                    labelRenderedSizeThreshold: 15,
+                    labelRenderedSizeThreshold: 11,
                     labelFont: 'Lato, sans-serif',
                     zIndex: true,
                   }}
