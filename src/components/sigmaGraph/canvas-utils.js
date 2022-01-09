@@ -87,23 +87,20 @@ export function drawHover(
   // And finally we draw the labels
   context.fillStyle = TEXT_COLOR
   context.font = `${weight} ${size}px ${font}`
-  context.fillText(nodeName, data.x + data.size + 3, data.y + size / 3)
+  const leftPadding = data.x + data.size
+  context.fillText(nodeName, leftPadding, data.y + size / 3)
 
   if (nodeId) {
     context.fillStyle = TEXT_COLOR
     context.font = `${weight} ${subLabelSize}px ${font}`
-    context.fillText(
-      nodeId,
-      data.x + data.size + 3,
-      data.y - (2 * size) / 3 - 2
-    )
+    context.fillText(nodeId, leftPadding, data.y - (2 * size) / 3 - 2)
   }
 
   context.fillStyle = data.color
   context.font = `${weight} ${subLabelSize}px ${font}`
   context.fillText(
     clusterLabel,
-    data.x + data.size + 3,
+    leftPadding,
     data.y + size / 3 + 3 + subLabelSize
   )
 }
@@ -126,19 +123,20 @@ export default function drawLabel(
   const width = context.measureText(data.label).width + 8
 
   context.fillStyle = '#ffffffcc'
-  context.fillRect(data.x + data.size, data.y + size / 3 - 15, width, 20)
+  const leftPadding = data.x + data.size
+  context.fillRect(leftPadding, data.y + size / 3 - 15, width, 20)
 
   context.fillStyle = '#000'
   const labelString = data.label.toLocaleString()
   const idx = labelString.indexOf(' ')
   context.fillText(
     labelString.substr(0, idx),
-    data.x + data.size + 3,
+    leftPadding,
     data.y - (2 * size) / 3 - 2
   )
   context.fillText(
     labelString.substr(idx).trim(),
-    data.x + data.size + 3,
+    leftPadding,
     data.y + size / 3
   )
 }
