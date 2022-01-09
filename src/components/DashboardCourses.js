@@ -41,7 +41,7 @@ export default function DashboardCourses() {
             defaultEdgeType: 'arrow',
             labelDensity: 0.07,
             labelGridCellSize: 60,
-            labelRenderedSizeThreshold: 15,
+            labelRenderedSizeThreshold: 30,
             labelFont: 'Lato, sans-serif',
             zIndex: true,
           }}

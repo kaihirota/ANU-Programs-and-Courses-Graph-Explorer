@@ -1,7 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ZoomControl } from 'react-sigma-v2'
-import { constant, keyBy, mapValues, omit, zip } from 'lodash'
-import chroma from 'chroma-js'
+import { constant, keyBy, mapValues, omit } from 'lodash'
 
 import GraphSettingsController from './views/GraphSettingsController'
 import GraphEventsController from './views/GraphEventsController'
@@ -54,13 +53,26 @@ const getTags = (nodes) => {
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index
   }
+
   const tags = nodes.map((n) => n.tag).filter(onlyUnique)
-  const colors = chroma.scale('Spectral').colors(10)
+  const COLORS = [
+    '#ff833a',
+    '#ff6659',
+    '#ff5c8d',
+    '#ae52d4',
+    '#8559da',
+    '#6f74dd',
+    '#63a4ff',
+    '#48a999',
+    '#60ad5e',
+  ]
+
+  // const colors = chroma.scale('Spectral').colors(10)
   let ret = new Array(tags.length)
   for (let i = 0; i < tags.length; i++) {
     ret[i] = {
       key: tags[i],
-      color: colors[i % 10],
+      color: COLORS[i % COLORS.length],
     }
   }
   return ret
@@ -117,6 +129,20 @@ const SigmaGraph = (props) => {
     return (
       <CircularProgress style={{ position: 'absolute', top: 1, left: 0 }} />
     )
+  }
+
+  const toggleTag = (tag) => {
+    setFiltersState((filters) => ({
+      ...filters,
+      tags: filters.tags[tag]
+        ? omit(filters.tags, tag)
+        : { ...filters.tags, [tag]: true },
+    }))
+
+    let clusterLayer = document.getElementById(tag)
+    if (clusterLayer) {
+      clusterLayer.hidden = filtersState.tags[tag]
+    }
   }
 
   return (
@@ -178,14 +204,7 @@ const SigmaGraph = (props) => {
                       tags,
                     }))
                   }
-                  toggleTag={(tag) => {
-                    setFiltersState((filters) => ({
-                      ...filters,
-                      tags: filters.tags[tag]
-                        ? omit(filters.tags, tag)
-                        : { ...filters.tags, [tag]: true },
-                    }))
-                  }}
+                  toggleTag={toggleTag}
                 />
               </div>
             </div>

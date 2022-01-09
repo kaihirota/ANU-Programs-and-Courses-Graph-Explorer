@@ -3,6 +3,7 @@ import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 import { circlepack } from 'graphology-layout'
 import { useSigmaContext } from 'react-sigma-v2/lib/esm/context'
+import chroma from 'chroma-js'
 
 const GraphDataController = (props) => {
   const { dataset, filters, children } = props
@@ -63,7 +64,7 @@ const GraphDataController = (props) => {
     )
 
     return () => graph.clear()
-  }, [graph, dataset])
+  }, [dataset])
 
   /**
    * Apply colors
@@ -78,7 +79,7 @@ const GraphDataController = (props) => {
     graph.forEachNode((node, { tag }) =>
       graph.setNodeAttribute(node, 'color', labelToColorMap[tag])
     )
-  }, [graph, dataset])
+  }, [dataset])
 
   // calculate cluster centroids
   useEffect(() => {
@@ -105,13 +106,19 @@ const GraphDataController = (props) => {
     })
 
     setClusters(newClusters)
-  }, [graph, dataset])
+  }, [dataset])
 
+  // TODO: remove old cluster layer when new layer is added (use the dropdown)
   useEffect(() => {
     // const container = sigmaContext.container
     const container = document.getElementsByClassName('sigma-container')[0]
-    console.log(container)
     if (sigmaContext.container) {
+      for (let i = 0; i < container.children.length; i++) {
+        if (container.children[i].id === 'clustersLayer') {
+          container.children[i].remove()
+        }
+      }
+
       // create the clustersLabel layer
       const clustersLayer = document.createElement('div')
       clustersLayer.id = 'clustersLayer'
@@ -124,7 +131,9 @@ const GraphDataController = (props) => {
           x: cluster.x,
           y: cluster.y,
         })
-        clusterLabelsDoms += `<div id='${cluster.label}' class="clusterLabel" style="top:${viewportPos.y}px;left:${viewportPos.x}px;color:${cluster.color}">${cluster.label}</div>`
+        const color = chroma(cluster.color).darken(1).hex()
+
+        clusterLabelsDoms += `<div id='${cluster.label}' class="clusterLabel" style="top:${viewportPos.y}px;left:${viewportPos.x}px;color:${color}">${cluster.label}</div>`
       }
       clustersLayer.innerHTML = clusterLabelsDoms
       // insert the layer underneath the hovers layer
@@ -148,7 +157,7 @@ const GraphDataController = (props) => {
         }
       })
     }
-  }, [clusters])
+  }, [dataset, clusters])
 
   /**
    * Apply filters to graphology:
