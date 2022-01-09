@@ -12,10 +12,13 @@ const TagsPanel = (props) => {
   const sigma = useSigma()
   const graph = sigma.getGraph()
 
-  const nodesPerTag = useMemo(() => {
-    const index /*: Record<string, number>*/ = {}
-    graph.forEachNode((_, { tag }) => (index[tag] = (index[tag] || 0) + 1))
-    return index
+  const [nodesPerTag, setNodesPerTag] = useState({})
+  useEffect(() => {
+    let index = {}
+    graph.forEachNode((node, { tag }) => {
+      index[tag] = (index[tag] || 0) + 1
+    })
+    setNodesPerTag(index)
   }, [])
 
   const maxNodesPerTag = useMemo(

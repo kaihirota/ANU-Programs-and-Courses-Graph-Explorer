@@ -1,12 +1,16 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 import { circlepack } from 'graphology-layout'
+import { useSigmaContext } from 'react-sigma-v2/lib/esm/context'
+import chroma from 'chroma-js'
 
 const GraphDataController = (props) => {
   const { dataset, filters, children } = props
   const sigma = useSigma()
   const graph = sigma.getGraph()
+  const sigmaContext = useSigmaContext()
+  const [clusters, setClusters] = useState({})
 
   /**
    * Feed graphology with the new dataset:
@@ -15,7 +19,9 @@ const GraphDataController = (props) => {
     if (!graph || !dataset) return
 
     dataset.nodes.forEach((n) => {
-      graph.addNode(n.id, n)
+      if (n.id && n.name) {
+        graph.addNode(n.id, n)
+      }
     })
 
     dataset.edges.forEach((edge) => {
@@ -58,7 +64,7 @@ const GraphDataController = (props) => {
     )
 
     return () => graph.clear()
-  }, [graph, dataset])
+  }, [dataset])
 
   /**
    * Apply colors
@@ -73,7 +79,85 @@ const GraphDataController = (props) => {
     graph.forEachNode((node, { tag }) =>
       graph.setNodeAttribute(node, 'color', labelToColorMap[tag])
     )
-  }, [graph, dataset])
+  }, [dataset])
+
+  // calculate cluster centroids
+  useEffect(() => {
+    const { nodes, tags } = dataset
+    let newClusters = { ...clusters }
+    nodes.forEach((node) => {
+      if (node.subject in newClusters) {
+        newClusters[node.subject].positions.push({ x: node.x, y: node.y })
+      } else {
+        newClusters[node.subject] = {
+          label: node.subject,
+          color: node.color,
+          positions: [{ x: node.x, y: node.y }],
+        }
+      }
+    })
+    Object.keys(newClusters).forEach((clusterLabel) => {
+      newClusters[clusterLabel].x =
+        newClusters[clusterLabel].positions.reduce((acc, p) => acc + p.x, 0) /
+        newClusters[clusterLabel].positions.length
+      newClusters[clusterLabel].y =
+        newClusters[clusterLabel].positions.reduce((acc, p) => acc + p.y, 0) /
+        newClusters[clusterLabel].positions.length
+    })
+
+    setClusters(newClusters)
+  }, [dataset])
+
+  // TODO: remove old cluster layer when new layer is added (use the dropdown)
+  useEffect(() => {
+    // const container = sigmaContext.container
+    const container = document.getElementsByClassName('sigma-container')[0]
+    if (sigmaContext.container) {
+      for (let i = 0; i < container.children.length; i++) {
+        if (container.children[i].id === 'clustersLayer') {
+          container.children[i].remove()
+        }
+      }
+
+      // create the clustersLabel layer
+      const clustersLayer = document.createElement('div')
+      clustersLayer.id = 'clustersLayer'
+      let clusterLabelsDoms = ''
+      for (const subject in clusters) {
+        // for each cluster create a div label
+        const cluster = clusters[subject]
+        // adapt the position to viewport coordinates
+        const viewportPos = sigma.graphToViewport({
+          x: cluster.x,
+          y: cluster.y,
+        })
+        const color = chroma(cluster.color).darken(1).hex()
+
+        clusterLabelsDoms += `<div id='${cluster.label}' class="clusterLabel" style="top:${viewportPos.y}px;left:${viewportPos.x}px;color:${color}">${cluster.label}</div>`
+      }
+      clustersLayer.innerHTML = clusterLabelsDoms
+      // insert the layer underneath the hovers layer
+      container.insertBefore(
+        clustersLayer,
+        document.getElementsByClassName('sigma-hovers')[0]
+      )
+
+      // Clusters labels position needs to be updated on each render
+      sigma.on('afterRender', () => {
+        for (const subject in clusters) {
+          const cluster = clusters[subject]
+          const clusterLabel = document.getElementById(cluster.label)
+          // update position from the viewport
+          const viewportPos = sigma.graphToViewport({
+            x: cluster.x,
+            y: cluster.y,
+          })
+          clusterLabel.style.top = `${viewportPos.y}px`
+          clusterLabel.style.left = `${viewportPos.x}px`
+        }
+      })
+    }
+  }, [dataset, clusters])
 
   /**
    * Apply filters to graphology:

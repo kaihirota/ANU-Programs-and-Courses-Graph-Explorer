@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { BsInfoCircle } from 'react-icons/bs'
 
 import Panel from './Panel'
-import CourseContext from '../CourseContext'
+import { SelectedCourseNodeContext } from '../../../contexts'
 import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 
@@ -120,9 +120,9 @@ DescriptionContent.propTypes = {
 }
 
 const DescriptionPanel = () => {
-  const course = useContext(CourseContext)
+  const course = useContext(SelectedCourseNodeContext)
   useEffect(() => {
-    console.log(course)
+    // console.log(course)
   }, [course.clickedNode])
 
   return (

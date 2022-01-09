@@ -1,7 +1,6 @@
-import React, { FC, useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useRegisterEvents, useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
-import CourseContext from '../CourseContext'
 
 function getMouseLayer() {
   return document.querySelector('.sigma-mouse')
