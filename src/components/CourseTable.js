@@ -85,6 +85,11 @@ export default function CourseTable() {
     }
   }, [data, selectedCourseRowContext])
 
+  const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
+    console.log(selectedRows)
+    // Note: It's highly recommended that you memoize the callback that you pass to onSelectedRowsChange if it updates the state of your parent component. This prevents DataTable from unnecessary re-renders every time your parent component is re-rendered
+  }
+
   return (
     <DataTable
       title="Courses"
@@ -95,6 +100,7 @@ export default function CourseTable() {
       selectableRows
       selectableRowsComponent={Checkbox}
       pagination
+      onSelectedRowsChange={handleChange}
     />
   )
 }
