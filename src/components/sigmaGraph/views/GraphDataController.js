@@ -124,16 +124,18 @@ const GraphDataController = (props) => {
       clustersLayer.id = 'clustersLayer'
       let clusterLabelsDoms = ''
       for (const subject in clusters) {
-        // for each cluster create a div label
-        const cluster = clusters[subject]
-        // adapt the position to viewport coordinates
-        const viewportPos = sigma.graphToViewport({
-          x: cluster.x,
-          y: cluster.y,
-        })
-        const color = chroma(cluster.color).darken(1).hex()
+        if (filters.tags[subject]) {
+          // for each cluster create a div label
+          const cluster = clusters[subject]
+          // adapt the position to viewport coordinates
+          const viewportPos = sigma.graphToViewport({
+            x: cluster.x,
+            y: cluster.y,
+          })
+          const color = chroma(cluster.color).darken(1).hex()
 
-        clusterLabelsDoms += `<div id='${cluster.label}' class="clusterLabel" style="top:${viewportPos.y}px;left:${viewportPos.x}px;color:${color}">${cluster.label}</div>`
+          clusterLabelsDoms += `<div id='${cluster.label}' class="clusterLabel" style="top:${viewportPos.y}px;left:${viewportPos.x}px;color:${color}">${cluster.label}</div>`
+        }
       }
       clustersLayer.innerHTML = clusterLabelsDoms
       // insert the layer underneath the hovers layer
@@ -152,12 +154,14 @@ const GraphDataController = (props) => {
             x: cluster.x,
             y: cluster.y,
           })
-          clusterLabel.style.top = `${viewportPos.y}px`
-          clusterLabel.style.left = `${viewportPos.x}px`
+          if (clusterLabel && clusterLabel.style) {
+            clusterLabel.style.top = `${viewportPos.y}px`
+            clusterLabel.style.left = `${viewportPos.x}px`
+          }
         }
       })
     }
-  }, [dataset, clusters])
+  }, [dataset, clusters, filters])
 
   /**
    * Apply filters to graphology:
