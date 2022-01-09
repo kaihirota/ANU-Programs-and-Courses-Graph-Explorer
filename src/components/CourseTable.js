@@ -34,30 +34,32 @@ export default function CourseTable() {
       name: 'ID',
       selector: (row) => row.id,
       sortable: true,
+      width: '10%',
     },
     {
       name: 'Name',
       selector: (row) => row.name,
       sortable: true,
+      width: '30%',
+      wrap: true,
     },
     {
       name: 'Units',
       selector: (row) => row.units,
       sortable: true,
-    },
-    {
-      name: 'Academic Career',
-      selector: (row) => row.academic_career,
+      width: '10%',
     },
     {
       name: 'College',
       selector: (row) => row.college,
       sortable: true,
+      width: '30%',
     },
     {
       name: 'Course Convener',
       selector: (row) => row.course_convener,
       sortable: true,
+      width: '15%',
     },
   ]
   const ExpandedComponent = ({ data }) => <p>{data.description}</p>
