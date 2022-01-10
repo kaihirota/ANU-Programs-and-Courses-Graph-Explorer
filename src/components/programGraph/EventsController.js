@@ -1,17 +1,15 @@
 import { useRegisterEvents, useSigma } from 'react-sigma-v2'
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { SelectedCoursesContext } from '../../contexts'
+import { useDispatch } from 'react-redux'
 
 function getMouseLayer() {
   return document.querySelector('.sigma-mouse')
 }
 
 const GraphEventsController = (props) => {
+  const dispatch = useDispatch()
   const { setHoveredNode, children } = props
-  const { selectedCourses, setSelectedCourses } = useContext(
-    SelectedCoursesContext
-  )
   const sigma = useSigma()
   const graph = sigma.getGraph()
   const registerEvents = useRegisterEvents()
@@ -24,11 +22,7 @@ const GraphEventsController = (props) => {
     registerEvents({
       // clickNode({ node }) {
       //   if (graph.getNodeAttribute(node, 'tag') === 'Course') {
-      //     if (selectedCourses.includes(node)) {
-      //       setSelectedCourses(selectedCourses.filter((c) => c !== node))
-      //     } else if (!selectedCourses.includes(node)) {
-      //       setSelectedCourses([...selectedCourses, node])
-      //     }
+      //     dispatch(toggleCourse(node))
       //   }
       // },
       enterNode({ node }) {

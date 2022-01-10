@@ -6,16 +6,13 @@ import clsx from 'clsx'
 import CourseTable from './CourseTable'
 import ProgramGraph from './programGraph/ProgramGraph'
 import { gql, useQuery } from '@apollo/client'
-import {
-  ProgramCoursesContext,
-  SelectedCoursesContext,
-  SelectedProgramContext,
-} from '../contexts'
 import { Autocomplete } from '@mui/material'
 
 import { SigmaContainer } from 'react-sigma-v2'
 import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
 import { drawLabelForProgramGraph } from './sigmaGraph/canvas-utils'
+import { useDispatch, useSelector } from 'react-redux'
+import { clearCourse, setProgram } from '../selections'
 
 const QUERY_GET_PROGRAMS = gql`
   {
@@ -52,9 +49,10 @@ const getUniquePrograms = (programs) => {
 }
 
 export default function DashboardPrograms() {
-  const [programId, setProgramId] = useState('')
-  const [selectedCourses, setSelectedCourses] = useState([])
-  // const [programCourses, setProgramCourses] = useState([])
+  const programId = useSelector((state) =>
+    state.selections.programId ? state.selections.programId : ''
+  )
+  const dispatch = useDispatch()
   const [clearSelected, setClearSelected] = useState(false)
   const theme = useTheme()
   const fixedHeightPaper = clsx(useStyles(theme).paper)
@@ -74,69 +72,57 @@ export default function DashboardPrograms() {
       selectedProgram.split(' - ')
 
     if (selectedProgramId && selectedProgramId !== '') {
-      // update selected program context
-      setProgramId(selectedProgramId)
-      // when new program is selected, clear selected classes
-      setSelectedCourses([])
+      dispatch(setProgram(selectedProgramId))
+      dispatch(clearCourse())
       setClearSelected(true)
     }
   }
 
   return (
     <React.Fragment>
-      <SelectedProgramContext.Provider value={{ programId, setProgramId }}>
-        <SelectedCoursesContext.Provider
-          value={{ selectedCourses, setSelectedCourses }}
-        >
-          {/*<ProgramCoursesContext.Provider*/}
-          {/*  value={{ programCourses, setProgramCourses }}*/}
-          {/*>*/}
-          <Container>
-            <Paper className={fixedHeightPaper}>
-              <Autocomplete
-                disablePortal
-                options={programs}
-                getOptionLabel={(option) => `${option.name} - ${option.id}`}
-                sx={{ width: 400 }}
-                renderInput={(params) => {
-                  return (
-                    <TextField
-                      {...params}
-                      label={
-                        selectedProgram && selectedProgram.length > 0
-                          ? `${selectedProgram[0].name} - ${programId}`
-                          : 'Program'
-                      }
-                    />
-                  )
-                }}
-                onChange={updateContext}
-                onClose={updateContext}
-              />
-              <SigmaContainer
-                graphOptions={{ type: 'directed', multi: true }}
-                style={{ height: '600px', width: '100%' }}
-                initialSettings={{
-                  nodeProgramClasses: { image: getNodeImageProgram() },
-                  labelRenderer: drawLabelForProgramGraph,
-                  defaultNodeType: 'image',
-                  defaultEdgeType: 'arrow',
-                  labelDensity: 0.07,
-                  labelGridCellSize: 60,
-                  labelRenderedSizeThreshold: 11,
-                  labelFont: 'Lato, sans-serif',
-                  zIndex: true,
-                }}
-                className="react-sigma"
-              >
-                <ProgramGraph />
-              </SigmaContainer>
-              <CourseTable clearSelected={clearSelected} />
-            </Paper>
-          </Container>
-          {/*</ProgramCoursesContext.Provider>*/}
-        </SelectedCoursesContext.Provider>
-      </SelectedProgramContext.Provider>
+      <Container>
+        <Paper className={fixedHeightPaper}>
+          <Autocomplete
+            disablePortal
+            options={programs}
+            getOptionLabel={(option) => `${option.name} - ${option.id}`}
+            sx={{ width: 400 }}
+            renderInput={(params) => {
+              return (
+                <TextField
+                  {...params}
+                  label={
+                    selectedProgram && selectedProgram.length > 0
+                      ? `${selectedProgram[0].name} - ${programId}`
+                      : 'Program'
+                  }
+                />
+              )
+            }}
+            onChange={updateContext}
+            onClose={updateContext}
+          />
+          <SigmaContainer
+            graphOptions={{ type: 'directed', multi: true }}
+            style={{ height: '600px', width: '100%' }}
+            initialSettings={{
+              nodeProgramClasses: { image: getNodeImageProgram() },
+              labelRenderer: drawLabelForProgramGraph,
+              defaultNodeType: 'image',
+              defaultEdgeType: 'arrow',
+              labelDensity: 0.07,
+              labelGridCellSize: 60,
+              labelRenderedSizeThreshold: 11,
+              labelFont: 'Lato, sans-serif',
+              zIndex: true,
+            }}
+            className="react-sigma"
+          >
+            <ProgramGraph />
+          </SigmaContainer>
+          <CourseTable clearSelected={clearSelected} />
+        </Paper>
+      </Container>
     </React.Fragment>
   )
 }

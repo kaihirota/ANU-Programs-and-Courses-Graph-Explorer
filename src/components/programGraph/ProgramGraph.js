@@ -1,19 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../graph.css'
-import GraphEventsController from '../sigmaGraph/views/GraphEventsController'
 import DataController from './DataController'
 import {
   extractDataset,
-  getUniqueClassesSorted,
   NEO4J_PASSWORD,
   NEO4J_URI,
   NEO4J_USER,
 } from '../../utils'
-import { ProgramCoursesContext, SelectedProgramContext } from '../../contexts'
-import CourseTable from '../CourseTable'
 import GraphSettingsController from '../sigmaGraph/views/GraphSettingsController'
 import EventsController from './EventsController'
 import { drawHoverForProgram } from '../sigmaGraph/canvas-utils'
+import { useSelector } from 'react-redux'
 
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
@@ -25,10 +22,9 @@ const CYPHER_QUERY =
   'MATCH p=(:Program {id: $program_id})-[r:REQUIREMENT*1..]->() RETURN p'
 
 export default function ProgramGraph() {
-  const { programId, setProgramId } = useContext(SelectedProgramContext)
-  // const { programCourses, setProgramCourses } = useContext(
-  //   ProgramCoursesContext
-  // )
+  const programId = useSelector((state) =>
+    state.selections.programId ? state.selections.programId : ''
+  )
   const [hoveredNode, setHoveredNode] = useState()
   const [clickedNode, setClickedNode] = useState('')
   const [dataset, setDataset] = useState({
@@ -63,11 +59,6 @@ export default function ProgramGraph() {
         .then((result) => {
           const dataset = extractDataset(result.records, extractNode)
           setDataset(dataset)
-          // setProgramCourses(
-          //   getUniqueClassesSorted(
-          //     dataset.nodes.filter((node) => node.tag && node.tag === 'Course')
-          //   )
-          // )
         })
         .catch((error) => {
           console.log(error)

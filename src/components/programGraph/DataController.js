@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 
 import { circular } from 'graphology-layout'
 import noverlap from 'graphology-layout-noverlap'
-import { SelectedCoursesContext, SelectedProgramContext } from '../../contexts'
+import { useSelector } from 'react-redux'
 
 const COLORMAP = {
   Program: '#5454FF',
@@ -15,9 +15,11 @@ const COLORMAP = {
 }
 
 const DataController = (props) => {
-  const { programId, setProgramId } = useContext(SelectedProgramContext)
-  const { selectedCourses, setSelectedCourses } = useContext(
-    SelectedCoursesContext
+  const programId = useSelector((state) =>
+    state.selections.programId ? state.selections.programId : ''
+  )
+  const selectedCourses = useSelector((state) =>
+    state.selections ? state.selections.selectedCourses : []
   )
   const { dataset, children } = props
   const sigma = useSigma()

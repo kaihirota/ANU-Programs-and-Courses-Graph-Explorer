@@ -4,8 +4,9 @@ import { gql, useLazyQuery } from '@apollo/client'
 import { getUniqueClassesSorted } from '../utils'
 import { Checkbox } from '@material-ui/core'
 import DataTable from 'react-data-table-component'
-import { SelectedCoursesContext, SelectedProgramContext } from '../contexts'
 import PropTypes from 'prop-types'
+import { useDispatch, useSelector } from 'react-redux'
+import { setSelectedCourses, toggleCourse } from '../selections'
 
 const columns = [
   {
@@ -59,10 +60,13 @@ const QUERY_PROGRAM_CLASSES = gql`
 
 export default function CourseTable(props) {
   const { clearSelected } = props
-  const { programId, setProgramId } = useContext(SelectedProgramContext)
-  const { selectedCourses, setSelectedCourses } = useContext(
-    SelectedCoursesContext
+  const programId = useSelector((state) =>
+    state.selections ? state.selections.programId : ''
   )
+  const selectedCourses = useSelector((state) =>
+    state.selections ? state.selections.selectedCourses : []
+  )
+  const dispatch = useDispatch()
   const [getClasses, { data, error, loading }] = useLazyQuery(
     QUERY_PROGRAM_CLASSES
   )
@@ -75,21 +79,20 @@ export default function CourseTable(props) {
 
   useEffect(() => {
     if (data && data.programs && data.programs.length > 0) {
-      let classes = getUniqueClassesSorted(data.programs[0].classes)
-      if (selectedCourses && selectedCourses.length > 0) {
-        const selected = classes.filter((c) => selectedCourses.includes(c.id))
-        const notSelected = classes.filter(
-          (c) => !selectedCourses.includes(c.id)
-        )
-        classes = selected.concat(notSelected)
-      }
-      setClasses(classes)
+      setClasses(getUniqueClassesSorted(data.programs[0].classes))
     }
-  }, [data, selectedCourses])
+  }, [data])
+
+  // useEffect(() => {
+  //   if (classes.length > 0 && selectedCourses && selectedCourses.length > 0) {
+  //     const selected = classes.filter((c) => selectedCourses.includes(c.id))
+  //     const notSelected = classes.filter((c) => !selectedCourses.includes(c.id))
+  //     setClasses(selected.concat(notSelected))
+  //   }
+  // }, [selectedCourses])
 
   const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
-    setSelectedCourses(selectedRows.map((cls) => cls.id))
-    // Note: It's highly recommended that you memoize the callback that you pass to onSelectedRowsChange if it updates the state of your parent component. This prevents DataTable from unnecessary re-renders every time your parent component is re-rendered
+    dispatch(setSelectedCourses(selectedRows.map((cls) => cls.id)))
   }
 
   return (
