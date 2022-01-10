@@ -1,16 +1,15 @@
-import React, { FC, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useSigma } from 'react-sigma-v2'
 
 import { drawHover } from '../canvas-utils'
 import useDebounce from '../use-debounce'
 import PropTypes from 'prop-types'
-import GraphEventsController from './GraphEventsController'
 
 const NODE_FADE_COLOR = '#bbb'
 const EDGE_FADE_COLOR = '#eee'
 
 const GraphSettingsController = (props) => {
-  const { hoveredNode, children } = props
+  const { hoveredNode, children, drawHover } = props
   const sigma = useSigma()
   const graph = sigma.getGraph()
 
@@ -73,8 +72,15 @@ const GraphSettingsController = (props) => {
 
   return <>{children}</>
 }
-GraphEventsController.propTypes = {
+
+GraphSettingsController.propTypes = {
   hoveredNode: PropTypes.string,
   children: PropTypes.node,
+  drawHover: PropTypes.func,
 }
+
+GraphSettingsController.defaultProps = {
+  drawHover: drawHover,
+}
+
 export default GraphSettingsController

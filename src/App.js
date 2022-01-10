@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import GitHubButton from 'react-github-btn'
@@ -27,11 +27,11 @@ import {
 import SchoolIcon from '@material-ui/icons/School'
 import DashboardPrograms from './components/DashboardPrograms'
 import dotenv from 'dotenv'
-import { SelectedProgramContext, SelectedCourseRowContext } from './contexts'
-import GitHubIcon from '@mui/icons-material/GitHub'
 import HomeIcon from '@mui/icons-material/Home'
 import GolfCourseIcon from '@material-ui/icons/GolfCourse'
 import DashboardCourses from './components/DashboardCourses'
+import { Provider } from 'react-redux'
+import { store } from './store'
 
 // set environment variables from .env
 dotenv.config()
@@ -173,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App() {
   const styles = useStyles()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -183,83 +183,85 @@ export default function App() {
   }
 
   return (
-    <Router>
-      <div className={styles.root}>
-        <CssBaseline />
-        <AppBar
-          position="absolute"
-          className={clsx(styles.appBar, open && styles.appBarShift)}
-        >
-          <Toolbar className={styles.toolbar}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              className={clsx(
-                styles.menuButton,
-                open && styles.menuButtonHidden
-              )}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              className={styles.title}
-            >
-              ANU Programs and Courses Graph Explorer
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          variant="permanent"
-          classes={{
-            paper: clsx(styles.drawerPaper, !open && styles.drawerPaperClose),
-          }}
-          open={open}
-        >
-          <div className={styles.toolbarIcon}>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </div>
-          <Divider />
-          <List>
-            <Link to="/" className={styles.navLink}>
-              <ListItem button>
-                <ListItemIcon>
-                  <GolfCourseIcon />
-                </ListItemIcon>
-                <ListItemText primary="Programs" />
-              </ListItem>
-            </Link>
-            <Link to="/courses" className={styles.navLink}>
-              <ListItem button>
-                <ListItemIcon>
-                  <SchoolIcon />
-                </ListItemIcon>
-                <ListItemText primary="Courses" />
-              </ListItem>
-            </Link>
-          </List>
-          <Divider />
-        </Drawer>
-        <main className={styles.content}>
-          <div className={styles.appBarSpacer} />
-          <Container maxWidth="lg" className={styles.container}>
-            <Switch>
-              <Route exact path="/" component={DashboardPrograms} />
-              <Route exact path="/courses" component={DashboardCourses} />
-            </Switch>
-            <Box pt={4}>
-              <Footer />
-            </Box>
-          </Container>
-        </main>
-      </div>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <div className={styles.root}>
+          <CssBaseline />
+          <AppBar
+            position="absolute"
+            className={clsx(styles.appBar, open && styles.appBarShift)}
+          >
+            <Toolbar className={styles.toolbar}>
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                className={clsx(
+                  styles.menuButton,
+                  open && styles.menuButtonHidden
+                )}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography
+                component="h1"
+                variant="h6"
+                color="inherit"
+                noWrap
+                className={styles.title}
+              >
+                ANU Programs and Courses Graph Explorer
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            variant="permanent"
+            classes={{
+              paper: clsx(styles.drawerPaper, !open && styles.drawerPaperClose),
+            }}
+            open={open}
+          >
+            <div className={styles.toolbarIcon}>
+              <IconButton onClick={handleDrawerClose}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
+            <Divider />
+            <List>
+              <Link to="/" className={styles.navLink}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <GolfCourseIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Programs" />
+                </ListItem>
+              </Link>
+              <Link to="/courses" className={styles.navLink}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <SchoolIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Courses" />
+                </ListItem>
+              </Link>
+            </List>
+            <Divider />
+          </Drawer>
+          <main className={styles.content}>
+            <div className={styles.appBarSpacer} />
+            <Container maxWidth="lg" className={styles.container}>
+              <Switch>
+                <Route exact path="/" component={DashboardPrograms} />
+                <Route exact path="/courses" component={DashboardCourses} />
+              </Switch>
+              <Box pt={4}>
+                <Footer />
+              </Box>
+            </Container>
+          </main>
+        </div>
+      </Router>
+    </Provider>
   )
 }

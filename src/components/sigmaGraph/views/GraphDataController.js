@@ -28,9 +28,6 @@ const GraphDataController = (props) => {
       try {
         graph.addEdge(edge.from, edge.to, { size: 1 })
       } catch (e) {
-        /*Uncaught UsageGraphError: Graph.addEdge: an edge linking "COMP4330" to
-         "COMP8330" already exists. If you really want to add multiple edges
-          linking those nodes, you should create a multi graph by using the 'multi' option.*/
         // console.log(e)
       }
     })

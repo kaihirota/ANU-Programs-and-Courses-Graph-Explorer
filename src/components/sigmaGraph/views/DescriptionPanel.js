@@ -120,10 +120,7 @@ DescriptionContent.propTypes = {
 }
 
 const DescriptionPanel = () => {
-  const course = useContext(SelectedCourseNodeContext)
-  useEffect(() => {
-    // console.log(course)
-  }, [course.clickedNode])
+  const clickedNode = useContext(SelectedCourseNodeContext)
 
   return (
     <Panel
@@ -134,7 +131,7 @@ const DescriptionPanel = () => {
         </>
       }
     >
-      <DescriptionContent selectedNode={course.clickedNode} />
+      <DescriptionContent selectedNode={clickedNode} />
     </Panel>
   )
 }
