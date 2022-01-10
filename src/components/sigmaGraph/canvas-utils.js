@@ -117,7 +117,6 @@ export function drawHoverForProgram(
   const font = settings.labelFont
   const weight = settings.labelWeight
   const subLabelSize = size - 2
-  console.log(data)
   if (data.tag === 'Course') {
     const nodeId = data.id
     const nodeName = data.name
@@ -297,7 +296,6 @@ export function drawLabelForProgramGraph(
     font = settings.labelFont,
     weight = settings.labelWeight
   context.font = `${weight} ${size}px ${font}`
-  console.log(data)
   const width = context.measureText(data.label).width + 12
   context.fillStyle = '#ffffffcc'
   context.fillRect(data.x + data.size, data.y + size / 3 - 15, width, 20)
