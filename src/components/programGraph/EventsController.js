@@ -24,13 +24,12 @@ const GraphEventsController = (props) => {
     registerEvents({
       // clickNode({ node }) {
       //   if (graph.getNodeAttribute(node, 'tag') === 'Course') {
-      //     if (!selectedCourses.includes(node)) {
-      //       setSelectedCourses([...selectedCourses, node])
-      //     } else if (selectedCourses.includes(node)) {
+      //     if (selectedCourses.includes(node)) {
       //       setSelectedCourses(selectedCourses.filter((c) => c !== node))
+      //     } else if (!selectedCourses.includes(node)) {
+      //       setSelectedCourses([...selectedCourses, node])
       //     }
       //   }
-      //   console.log(selectedCourses)
       // },
       enterNode({ node }) {
         setHoveredNode(node)

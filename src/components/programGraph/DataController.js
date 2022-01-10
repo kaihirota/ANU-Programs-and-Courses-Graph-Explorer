@@ -78,6 +78,7 @@ const DataController = (props) => {
 
         let units = 0
         if (root !== '') {
+          if (!graph.hasNode(root)) return null
           const attributes = graph.getNodeAttributes(root)
           if (attributes.tag === 'Course' && selectedCourses.includes(root)) {
             graph.setNodeAttribute(root, 'color', COLORMAP.Complete)

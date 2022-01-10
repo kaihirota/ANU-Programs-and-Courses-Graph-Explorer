@@ -4,11 +4,8 @@ import { gql, useLazyQuery } from '@apollo/client'
 import { getUniqueClassesSorted } from '../utils'
 import { Checkbox } from '@material-ui/core'
 import DataTable from 'react-data-table-component'
-import {
-  ProgramCoursesContext,
-  SelectedCoursesContext,
-  SelectedProgramContext,
-} from '../contexts'
+import { SelectedCoursesContext, SelectedProgramContext } from '../contexts'
+import PropTypes from 'prop-types'
 
 const columns = [
   {
@@ -60,15 +57,11 @@ const QUERY_PROGRAM_CLASSES = gql`
   }
 `
 
-export default function CourseTable() {
-  // const selectedProgramContext = useContext(SelectedProgramContext)
-  // const selectedCourseRowContext = useContext(SelectedCoursesContext)
+export default function CourseTable(props) {
+  const { clearSelected } = props
   const { programId, setProgramId } = useContext(SelectedProgramContext)
   const { selectedCourses, setSelectedCourses } = useContext(
     SelectedCoursesContext
-  )
-  const { programCourses, setProgramCourses } = useContext(
-    ProgramCoursesContext
   )
   const [getClasses, { data, error, loading }] = useLazyQuery(
     QUERY_PROGRAM_CLASSES
@@ -95,7 +88,7 @@ export default function CourseTable() {
   }, [data, selectedCourses])
 
   const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
-    console.log(selectedRows)
+    setSelectedCourses(selectedRows.map((cls) => cls.id))
     // Note: It's highly recommended that you memoize the callback that you pass to onSelectedRowsChange if it updates the state of your parent component. This prevents DataTable from unnecessary re-renders every time your parent component is re-rendered
   }
 
@@ -110,6 +103,12 @@ export default function CourseTable() {
       selectableRowsComponent={Checkbox}
       pagination
       onSelectedRowsChange={handleChange}
+      progressPending={loading}
+      clearSelectedRows={clearSelected}
     />
   )
+}
+
+CourseTable.propTypes = {
+  clearSelected: PropTypes.bool.isRequired,
 }

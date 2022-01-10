@@ -26,9 +26,9 @@ const CYPHER_QUERY =
 
 export default function ProgramGraph() {
   const { programId, setProgramId } = useContext(SelectedProgramContext)
-  const { programCourses, setProgramCourses } = useContext(
-    ProgramCoursesContext
-  )
+  // const { programCourses, setProgramCourses } = useContext(
+  //   ProgramCoursesContext
+  // )
   const [hoveredNode, setHoveredNode] = useState()
   const [clickedNode, setClickedNode] = useState('')
   const [dataset, setDataset] = useState({
@@ -63,11 +63,11 @@ export default function ProgramGraph() {
         .then((result) => {
           const dataset = extractDataset(result.records, extractNode)
           setDataset(dataset)
-          setProgramCourses(
-            getUniqueClassesSorted(
-              dataset.nodes.filter((node) => node.tag && node.tag === 'Course')
-            )
-          )
+          // setProgramCourses(
+          //   getUniqueClassesSorted(
+          //     dataset.nodes.filter((node) => node.tag && node.tag === 'Course')
+          //   )
+          // )
         })
         .catch((error) => {
           console.log(error)
