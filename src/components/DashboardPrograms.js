@@ -1,47 +1,59 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import {
-  CircularProgress,
-  Container,
-  Paper,
-  TextField,
-} from '@material-ui/core'
+import { Container, Paper, TextField } from '@material-ui/core'
 import clsx from 'clsx'
 
-import ProgramGraph from './programGraph/ProgramGraph'
-import { useQuery } from '@apollo/client'
+import ProgramGraphs from './ProgramGraphs'
+import CourseTable from './CourseTable'
+import { gql, useQuery } from '@apollo/client'
 import Title from './Title'
+import { SelectedCourseRowContext, SelectedProgramContext } from '../contexts'
 import { Autocomplete } from '@mui/material'
-import { getUniquePrograms, QUERY_GET_PROGRAMS } from '../utils'
-import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
-import { drawLabelForProgramGraph } from './sigmaGraph/canvas-utils'
-import { SigmaContainer } from 'react-sigma-v2'
-import {
-  ProgramCoursesContext,
-  SelectedCoursesContext,
-  SelectedProgramContext,
-} from '../contexts'
-import CourseTable from './programGraph/CourseTable'
+
+const QUERY_GET_PROGRAMS = gql`
+  {
+    programs {
+      id
+      name
+    }
+  }
+`
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
-    height: 'auto',
+    overflow: 'auto',
     flexDirection: 'column',
   },
 }))
 
+const getUniquePrograms = (programs) => {
+  let obj = {}
+  programs
+    .filter((program) => program.id && program.id !== '')
+    .filter((program) => program.name && program.name.trim() !== '')
+    .forEach((program) => {
+      obj[program.id] = program
+    })
+  return Object.keys(obj).map(function (id) {
+    return obj[id]
+  })
+}
+
 export default function DashboardPrograms() {
-  const [programCourses, setProgramCourses] = useState('')
-  const [programId, setProgramId] = useState('')
-  const [selectedCourses, setSelectedCourses] = useState([])
+  const selectedProgramContext = useContext(SelectedProgramContext)
+  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
   const theme = useTheme()
   const fixedHeightPaper = clsx(useStyles(theme).paper)
 
   const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
   if (error) return <p>Error</p>
-  if (loading) return <CircularProgress />
+  if (loading) return <p>Loading</p>
+
   const programs = getUniquePrograms(data.programs)
   const selectedProgram = programs.filter((p) => p.id === programId)
 
@@ -60,6 +72,13 @@ export default function DashboardPrograms() {
     }
   }
 
+  const selectedProgram = programs.filter(
+    (p) => p.id === selectedProgramContext.program
+  )
+  const label =
+    selectedProgram && selectedProgram.length > 0
+      ? `${selectedProgram[0].name} - ${selectedProgramContext.program}`
+      : 'Program'
   return (
     <React.Fragment>
       <SelectedProgramContext.Provider value={{ programId, setProgramId }}>
@@ -91,7 +110,6 @@ export default function DashboardPrograms() {
                   onChange={updateContext}
                   onClose={updateContext}
                 />
-                <Title>Program Graph</Title>
                 <SigmaContainer
                   graphOptions={{ type: 'directed', multi: true }}
                   style={{ height: '600px', width: '100%' }}
