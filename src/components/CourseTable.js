@@ -1,91 +1,98 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
-import { SelectedCourseRowContext, SelectedProgramContext } from '../contexts'
-import { getUniqueClasses } from '../utils'
+
+import { getUniqueClassesSorted } from '../utils'
 import { Checkbox } from '@material-ui/core'
 import DataTable from 'react-data-table-component'
+import {
+  ProgramCoursesContext,
+  SelectedCoursesContext,
+  SelectedProgramContext,
+} from '../contexts'
 
-export default function CourseTable() {
-  const selectedProgramContext = useContext(SelectedProgramContext)
-  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
-  const QUERY_PROGRAM_CLASSES = gql`
-    query programs($id: ID!) {
-      programs(where: { id: $id }) {
-        classes {
-          id
-          name
-          units
-          academic_career
-          college
-          course_convener
-          description
-        }
+const columns = [
+  {
+    name: 'ID',
+    selector: (row) => row.id,
+    sortable: true,
+    width: '10%',
+  },
+  {
+    name: 'Name',
+    selector: (row) => row.name,
+    sortable: true,
+    width: '30%',
+    wrap: true,
+  },
+  {
+    name: 'Units',
+    selector: (row) => row.units,
+    sortable: true,
+    width: '10%',
+  },
+  {
+    name: 'College',
+    selector: (row) => row.college,
+    sortable: true,
+    width: '30%',
+  },
+  {
+    name: 'Course Convener',
+    selector: (row) => row.course_convener,
+    sortable: true,
+    width: '15%',
+  },
+]
+
+const QUERY_PROGRAM_CLASSES = gql`
+  query programs($id: ID!) {
+    programs(where: { id: $id }) {
+      classes {
+        id
+        name
+        units
+        academic_career
+        college
+        course_convener
+        description
       }
     }
-  `
+  }
+`
 
+export default function CourseTable() {
+  // const selectedProgramContext = useContext(SelectedProgramContext)
+  // const selectedCourseRowContext = useContext(SelectedCoursesContext)
+  const { programId, setProgramId } = useContext(SelectedProgramContext)
+  const { selectedCourses, setSelectedCourses } = useContext(
+    SelectedCoursesContext
+  )
+  const { programCourses, setProgramCourses } = useContext(
+    ProgramCoursesContext
+  )
   const [getClasses, { data, error, loading }] = useLazyQuery(
     QUERY_PROGRAM_CLASSES
   )
   const [classes, setClasses] = useState([])
-
-  const columns = [
-    {
-      name: 'ID',
-      selector: (row) => row.id,
-      sortable: true,
-      width: '10%',
-    },
-    {
-      name: 'Name',
-      selector: (row) => row.name,
-      sortable: true,
-      width: '30%',
-      wrap: true,
-    },
-    {
-      name: 'Units',
-      selector: (row) => row.units,
-      sortable: true,
-      width: '10%',
-    },
-    {
-      name: 'College',
-      selector: (row) => row.college,
-      sortable: true,
-      width: '30%',
-    },
-    {
-      name: 'Course Convener',
-      selector: (row) => row.course_convener,
-      sortable: true,
-      width: '15%',
-    },
-  ]
   const ExpandedComponent = ({ data }) => <p>{data.description}</p>
 
   useEffect(async () => {
-    await getClasses({ variables: { id: selectedProgramContext.program } })
-  }, [selectedProgramContext])
+    await getClasses({ variables: { id: programId } })
+  }, [programId])
 
   useEffect(() => {
     if (data && data.programs && data.programs.length > 0) {
-      let classes = getUniqueClasses(data.programs[0].classes)
-      if (
-        selectedCourseRowContext.coursesTaken &&
-        selectedCourseRowContext.coursesTaken.length > 0
-      ) {
-        const selected = classes.filter((c) =>
-          selectedCourseRowContext.coursesTaken.includes(c.id)
-        )
+      let classes = getUniqueClassesSorted(data.programs[0].classes)
+      if (selectedCourses && selectedCourses.length > 0) {
+        const selected = classes.filter((c) => selectedCourses.includes(c.id))
         const notSelected = classes.filter(
-          (c) => !selectedCourseRowContext.coursesTaken.includes(c.id)
+          (c) => !selectedCourses.includes(c.id)
         )
         classes = selected.concat(notSelected)
       }
       setClasses(classes)
     }
-  }, [data, selectedCourseRowContext])
+  }, [data, selectedCourses])
 
   const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
     console.log(selectedRows)

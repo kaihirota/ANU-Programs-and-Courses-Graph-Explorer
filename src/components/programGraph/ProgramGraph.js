@@ -10,7 +10,7 @@ import {
   NEO4J_USER,
 } from '../../utils'
 import { ProgramCoursesContext, SelectedProgramContext } from '../../contexts'
-import CourseTable from './CourseTable'
+import CourseTable from '../CourseTable'
 import GraphSettingsController from '../sigmaGraph/views/GraphSettingsController'
 import EventsController from './EventsController'
 import { drawHoverForProgram } from '../sigmaGraph/canvas-utils'

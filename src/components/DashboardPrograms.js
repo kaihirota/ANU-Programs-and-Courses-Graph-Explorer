@@ -1,14 +1,21 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useState } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { Container, Paper, TextField } from '@material-ui/core'
 import clsx from 'clsx'
 
-import ProgramGraphs from './ProgramGraphs'
 import CourseTable from './CourseTable'
+import ProgramGraph from './programGraph/ProgramGraph'
 import { gql, useQuery } from '@apollo/client'
-import Title from './Title'
-import { SelectedCourseRowContext, SelectedProgramContext } from '../contexts'
+import {
+  ProgramCoursesContext,
+  SelectedCoursesContext,
+  SelectedProgramContext,
+} from '../contexts'
 import { Autocomplete } from '@mui/material'
+
+import { SigmaContainer } from 'react-sigma-v2'
+import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
+import { drawLabelForProgramGraph } from './sigmaGraph/canvas-utils'
 
 const QUERY_GET_PROGRAMS = gql`
   {
@@ -45,8 +52,9 @@ const getUniquePrograms = (programs) => {
 }
 
 export default function DashboardPrograms() {
-  const selectedProgramContext = useContext(SelectedProgramContext)
-  const selectedCourseRowContext = useContext(SelectedCourseRowContext)
+  const [programId, setProgramId] = useState('')
+  const [selectedCourses, setSelectedCourses] = useState([])
+  const [programCourses, setProgramCourses] = useState([])
   const theme = useTheme()
   const fixedHeightPaper = clsx(useStyles(theme).paper)
 
@@ -72,12 +80,10 @@ export default function DashboardPrograms() {
     }
   }
 
-  const selectedProgram = programs.filter(
-    (p) => p.id === selectedProgramContext.program
-  )
+  console.log(selectedProgram)
   const label =
     selectedProgram && selectedProgram.length > 0
-      ? `${selectedProgram[0].name} - ${selectedProgramContext.program}`
+      ? `${selectedProgram[0].name} - ${selectedProgram[0].id}`
       : 'Program'
   return (
     <React.Fragment>
