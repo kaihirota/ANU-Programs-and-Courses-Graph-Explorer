@@ -64,7 +64,7 @@ export default function ProgramGraph(props) {
     } else if (extracted.tag === 'Specialisation') {
       extracted.label = node.properties.name
     } else if (extracted.tag === 'Course') {
-      extracted.label = `${node.properties.id} ${node.properties.name}`
+      extracted.label = `${node.properties.id}`
     }
     return extracted
   }
@@ -197,13 +197,13 @@ export default function ProgramGraph(props) {
 
   return (
     <>
-      <CytoscapeComponent
-        elements={cytoscapeDataset}
-        stylesheet={style}
-        layout={layout}
-        style={{ width: '100%', height: '50vh' }}
-      />
-      <div id={'cy'} style={{ width: '100%', height: '50vh' }} />
+      {/*<CytoscapeComponent*/}
+      {/*  elements={cytoscapeDataset}*/}
+      {/*  stylesheet={style}*/}
+      {/*  layout={layout}*/}
+      {/*  style={{ width: '100%', height: '50vh' }}*/}
+      {/*/>*/}
+      <div id={'cy'} style={{ width: '800px', height: '50vh' }} />
     </>
   )
 }
