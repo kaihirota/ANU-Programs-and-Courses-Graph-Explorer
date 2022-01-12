@@ -178,7 +178,7 @@ export default function ProgramGraph(props) {
           label: 'data(label)',
           width: 30,
           height: 30,
-          shape: 'circle',
+          shape: 'ellipse',
           'font-family': 'Helvetica',
           'font-size': 14,
           'min-zoomed-font-size': 10,
