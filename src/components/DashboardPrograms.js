@@ -80,49 +80,37 @@ export default function DashboardPrograms() {
 
   return (
     <React.Fragment>
-      <Container>
-        <Paper className={fixedHeightPaper}>
-          <Autocomplete
-            disablePortal
-            options={programs}
-            getOptionLabel={(option) => `${option.name} - ${option.id}`}
-            sx={{ width: 400 }}
-            renderInput={(params) => {
-              return (
-                <TextField
-                  {...params}
-                  label={
-                    selectedProgram && selectedProgram.length > 0
-                      ? `${selectedProgram[0].name} - ${programId}`
-                      : 'Program'
-                  }
-                />
-              )
-            }}
-            onChange={updateContext}
-            onClose={updateContext}
-          />
-          <SigmaContainer
-            graphOptions={{ type: 'directed', multi: true }}
-            style={{ height: '600px', width: '100%' }}
-            initialSettings={{
-              nodeProgramClasses: { image: getNodeImageProgram() },
-              labelRenderer: drawLabelForProgramGraph,
-              defaultNodeType: 'image',
-              defaultEdgeType: 'arrow',
-              labelDensity: 0.07,
-              labelGridCellSize: 60,
-              labelRenderedSizeThreshold: 11,
-              labelFont: 'Lato, sans-serif',
-              zIndex: true,
-            }}
-            className="react-sigma"
-          >
-            <ProgramGraph />
-          </SigmaContainer>
-          <CourseTable clearSelected={clearSelected} />
-        </Paper>
-      </Container>
+      {/*<Container>*/}
+      {/*  <Paper className={fixedHeightPaper}>*/}
+      <Autocomplete
+        disablePortal
+        options={programs}
+        getOptionLabel={(option) => `${option.name} - ${option.id}`}
+        sx={{ width: 400 }}
+        renderInput={(params) => {
+          return (
+            <TextField
+              {...params}
+              label={
+                selectedProgram && selectedProgram.length > 0
+                  ? `${selectedProgram[0].name} - ${programId}`
+                  : 'Program'
+              }
+            />
+          )
+        }}
+        onChange={updateContext}
+        onClose={updateContext}
+      />
+      {/*<div*/}
+      {/*  className="graph-container"*/}
+      {/*  id="cy"*/}
+      {/*  style={{ width: '100%', height: '50vh' }}*/}
+      {/*/>*/}
+      <ProgramGraph />
+      <CourseTable clearSelected={clearSelected} />
+      {/*</Paper>*/}
+      {/*</Container>*/}
     </React.Fragment>
   )
 }
