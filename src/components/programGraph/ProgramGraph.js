@@ -157,29 +157,6 @@ export default function ProgramGraph(props) {
     console.log(cytoscapeDataset)
 
     const style = [
-      // // the stylesheet for the graph
-      // {
-      //   selector: 'node',
-      //   style: {
-      //     'background-color': '#FF5454',
-      //     label: 'data(label)',
-      //     'font-family': 'Helvetica',
-      //     'font-size': 8,
-      //     'min-zoomed-font-size': 8,
-      //   },
-      // },
-      //
-      // {
-      //   selector: 'edge',
-      //   style: {
-      //     width: 3,
-      //     'line-color': '#ccc',
-      //     'target-arrow-color': '#ccc',
-      //     // 'curve-style': 'bezier',
-      //     'target-arrow-shape': 'triangle',
-      //   },
-      // },
-
       {
         selector: 'node',
         style: {
