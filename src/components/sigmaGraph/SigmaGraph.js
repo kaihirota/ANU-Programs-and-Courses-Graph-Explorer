@@ -65,9 +65,7 @@ const SigmaGraph = (props) => {
     session
       .run(CYPHER_QUERY, { academicCareer: academicCareer })
       .then((result) => {
-        console.log(result)
         const dataset = extractDataset(result.records, extractNode)
-        console.log(dataset)
         setDataset(dataset)
         setFiltersState({
           tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),

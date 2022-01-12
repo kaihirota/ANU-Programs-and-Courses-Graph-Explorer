@@ -7,10 +7,6 @@ import CourseTable from './CourseTable'
 import ProgramGraph from './programGraph/ProgramGraph'
 import { gql, useQuery } from '@apollo/client'
 import { Autocomplete } from '@mui/material'
-
-import { SigmaContainer } from 'react-sigma-v2'
-import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
-import { drawLabelForProgramGraph } from './sigmaGraph/canvas-utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearCourse, setProgram } from '../selections'
 

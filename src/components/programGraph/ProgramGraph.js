@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CircularProgress } from '@material-ui/core'
 import cytoscape from 'cytoscape'
 import klay from 'cytoscape-klay'
-import { toggleCourse } from '../../selections'
 
 cytoscape.use(klay)
 
@@ -149,7 +148,6 @@ export default function ProgramGraph(props) {
   }, [programId])
 
   useEffect(() => {
-    console.log(dataset)
     const { nodes, edges, tags } = dataset
     let newDataset = []
 
@@ -168,7 +166,6 @@ export default function ProgramGraph(props) {
             // style: {'background-color': node.color},
           })
         })
-        console.log(nodes[0].key)
         // setLayout({ ...layout, roots: [nodes[0].key] })
       } catch (e) {
         // console.log(e)
@@ -185,15 +182,10 @@ export default function ProgramGraph(props) {
         })
       })
     }
-
-    console.log(newDataset)
     setCytoscapeDataset(newDataset)
   }, [dataset])
 
   useEffect(() => {
-    console.log(cytoscapeDataset)
-    console.log(selectedCourses)
-
     const style = [
       {
         selector: 'node',
@@ -263,13 +255,13 @@ export default function ProgramGraph(props) {
     })
     cyRef.current = cy
 
-    const handleNodeClick = (node) => {
-      if (node._private.data.tag && node._private.data.tag === 'Course') {
-        console.log(node)
-        // NOTE: this is on hold because currently there is no way to change the checkbox of the table
-        // dispatch(toggleCourse(node.id()))
-      }
-    }
+    // const handleNodeClick = (node) => {
+    //   if (node._private.data.tag && node._private.data.tag === 'Course') {
+    //     console.log(node)
+    //     // NOTE: this is on hold because currently there is no way to change the checkbox of the table
+    //     // dispatch(toggleCourse(node.id()))
+    //   }
+    // }
     // cy.on('tapstart', 'node', (evt) => handleNodeClick(evt.target))
   }, [cytoscapeDataset])
 
