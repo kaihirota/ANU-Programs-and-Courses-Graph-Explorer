@@ -44,7 +44,7 @@ const extractNode = (node) => {
   } else if (extracted.tag === 'Specialisation') {
     extracted.label = node.properties.name
   } else if (extracted.tag === 'Course') {
-    extracted.label = `${node.properties.id}`
+    extracted.label = `${node.properties.id} - ${node.properties.name}`
   }
   return extracted
 }
@@ -234,6 +234,9 @@ export default function ProgramGraph(props) {
         selector: 'node[tag = "Course"]',
         style: {
           'text-valign': 'bottom',
+          'text-rotation': 0.35,
+          'text-halign': 'right',
+          'font-size': 18,
         },
       },
       {
