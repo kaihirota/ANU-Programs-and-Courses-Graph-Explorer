@@ -83,14 +83,6 @@ export default function CourseTable(props) {
     }
   }, [data])
 
-  // useEffect(() => {
-  //   if (classes.length > 0 && selectedCourses && selectedCourses.length > 0) {
-  //     const selected = classes.filter((c) => selectedCourses.includes(c.id))
-  //     const notSelected = classes.filter((c) => !selectedCourses.includes(c.id))
-  //     setClasses(selected.concat(notSelected))
-  //   }
-  // }, [selectedCourses])
-
   const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
     dispatch(setSelectedCourses(selectedRows.map((cls) => cls.id)))
   }

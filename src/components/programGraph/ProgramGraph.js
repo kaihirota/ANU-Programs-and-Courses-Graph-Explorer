@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import '../graph.css'
 import {
   extractDataset,
@@ -6,10 +6,11 @@ import {
   NEO4J_URI,
   NEO4J_USER,
 } from '../../utils'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { CircularProgress } from '@material-ui/core'
 import cytoscape from 'cytoscape'
 import klay from 'cytoscape-klay'
+import { toggleCourse } from '../../selections'
 
 cytoscape.use(klay)
 
@@ -30,10 +31,33 @@ const COLORMAP = {
   Complete: '#54FF54',
 }
 
+const extractNode = (node) => {
+  let extracted = {
+    ...node.properties,
+    tag: node.labels[0],
+  }
+
+  if (extracted.tag === 'Requirement' && node.properties.units) {
+    extracted.label = node.properties.units.low
+  } else if (extracted.tag === 'Program') {
+    extracted.label = node.properties.name
+  } else if (extracted.tag === 'Specialisation') {
+    extracted.label = node.properties.name
+  } else if (extracted.tag === 'Course') {
+    extracted.label = `${node.properties.id}`
+  }
+  return extracted
+}
+
 export default function ProgramGraph(props) {
   const { children } = props
   const programId = useSelector((state) =>
     state.selections.programId ? state.selections.programId : ''
+  )
+  const dispatch = useDispatch()
+  const cyRef = useRef()
+  const selectedCourses = useSelector((state) =>
+    state.selections.selectedCourses ? state.selections.selectedCourses : []
   )
   const [dataset, setDataset] = useState({
     nodes: [],
@@ -42,24 +66,6 @@ export default function ProgramGraph(props) {
   })
   const [cytoscapeDataset, setCytoscapeDataset] = useState([])
   const [style, setStyle] = useState([])
-  const [cy, setCy] = useState()
-  const extractNode = (node) => {
-    let extracted = {
-      ...node.properties,
-      tag: node.labels[0],
-    }
-
-    if (extracted.tag === 'Requirement' && node.properties.units) {
-      extracted.label = node.properties.units.low
-    } else if (extracted.tag === 'Program') {
-      extracted.label = node.properties.name
-    } else if (extracted.tag === 'Specialisation') {
-      extracted.label = node.properties.name
-    } else if (extracted.tag === 'Course') {
-      extracted.label = `${node.properties.id}`
-    }
-    return extracted
-  }
   const [layout, setLayout] = useState({
     name: 'klay',
     nodeDimensionsIncludeLabels: false, // Boolean which changes whether label dimensions are included when calculating node dimensions
@@ -186,12 +192,16 @@ export default function ProgramGraph(props) {
 
   useEffect(() => {
     console.log(cytoscapeDataset)
+    console.log(selectedCourses)
 
     const style = [
       {
         selector: 'node',
         style: {
-          'background-color': (el) => COLORMAP[el.attr('tag')],
+          'background-color': (el) =>
+            selectedCourses.includes(el.attr('id'))
+              ? COLORMAP.Complete
+              : COLORMAP[el.attr('tag')],
           'background-height': '40%',
           'background-width': '40%',
           'border-color': '#fff',
@@ -219,7 +229,8 @@ export default function ProgramGraph(props) {
       },
     ]
     setStyle(style)
-  }, [cytoscapeDataset])
+    if (cyRef.current) cyRef.current.style(style).update()
+  }, [cytoscapeDataset, selectedCourses])
 
   useEffect(() => {
     let cy = cytoscape({
@@ -228,8 +239,18 @@ export default function ProgramGraph(props) {
       style: style,
       layout: layout,
     })
-    setCy(cy)
-  }, [style])
+    cyRef.current = cy
+
+    const handleNodeClick = (node) => {
+      if (node._private.data.tag && node._private.data.tag === 'Course') {
+        console.log(node)
+        // NOTE: this is on hold because currently there is no way to change the checkbox of the table
+        // dispatch(toggleCourse(node.id()))
+      }
+    }
+    // cy.on('tapstart', 'node', (evt) => handleNodeClick(evt.target))
+  }, [cytoscapeDataset])
+
   if (!(cytoscapeDataset && style && layout)) return <CircularProgress />
 
   return (
