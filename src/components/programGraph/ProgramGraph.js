@@ -39,6 +39,14 @@ const driver = neo4j.driver(
 const CYPHER_QUERY =
   'MATCH p=(:Program {id: $program_id})-[r:REQUIREMENT*1..]->() RETURN p'
 
+const COLORMAP = {
+  Program: '#5454FF',
+  Specialisation: '#AA47FF',
+  Requirement: '#FFBC47',
+  Course: '#FF5454',
+  Complete: '#54FF54',
+}
+
 export default function ProgramGraph(props) {
   const { children } = props
   const programId = useSelector((state) =>
@@ -51,6 +59,7 @@ export default function ProgramGraph(props) {
   })
   const [cytoscapeDataset, setCytoscapeDataset] = useState([])
   const [style, setStyle] = useState([])
+  const [cy, setCy] = useState()
   const extractNode = (node) => {
     let extracted = {
       ...node.properties,
@@ -160,25 +169,30 @@ export default function ProgramGraph(props) {
       {
         selector: 'node',
         style: {
+          'background-color': (el) => COLORMAP[el.attr('tag')],
+          'background-height': '40%',
+          'background-width': '40%',
+          'border-color': '#fff',
+          'border-width': '5%',
+          'overlay-opacity': 0,
           label: 'data(label)',
-          width: 100,
-          height: 100,
-          shape: 'ellipse',
-          'background-color': '#FF5454',
+          width: 30,
+          height: 30,
+          shape: 'circle',
           'font-family': 'Helvetica',
-          'font-size': 30,
-          'min-zoomed-font-size': 30,
+          'font-size': 14,
+          'min-zoomed-font-size': 10,
         },
       },
       {
         selector: 'edge',
         style: {
-          width: 5,
+          width: 1,
           // 'curve-style': 'bezier',
+          'line-color': '#4C4C4C',
+          'target-arrow-color': '#3A52E2',
           'target-arrow-shape': 'triangle',
-          'line-color': '#999',
           'overlay-opacity': 0,
-          'target-arrow-color': '#999',
         },
       },
     ]
@@ -192,6 +206,7 @@ export default function ProgramGraph(props) {
       style: style,
       layout: layout,
     })
+    setCy(cy)
   }, [style])
   if (!(cytoscapeDataset && style && layout)) return <CircularProgress />
 
@@ -203,7 +218,7 @@ export default function ProgramGraph(props) {
       {/*  layout={layout}*/}
       {/*  style={{ width: '100%', height: '50vh' }}*/}
       {/*/>*/}
-      <div id={'cy'} style={{ width: '800px', height: '50vh' }} />
+      <div id={'cy'} />
     </>
   )
 }

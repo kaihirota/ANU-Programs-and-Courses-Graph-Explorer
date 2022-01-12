@@ -378,3 +378,8 @@ ul > li {
     background-color: var(--transparent-white);
     opacity: 0.8;
 }
+
+#cy {
+    width: 100%;
+    height: 50vh;
+}
