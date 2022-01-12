@@ -71,7 +71,7 @@ export default function ProgramGraph(props) {
     nodeDimensionsIncludeLabels: false, // Boolean which changes whether label dimensions are included when calculating node dimensions
     fit: true, // Whether to fit
     padding: 20, // Padding on fit
-    animate: false, // Whether to transition the node positions
+    animate: true, // Whether to transition the node positions
     animateFilter: function (node, i) {
       return true
     }, // Whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
@@ -207,20 +207,39 @@ export default function ProgramGraph(props) {
           'border-color': '#fff',
           'border-width': '5%',
           'overlay-opacity': 0,
+          'text-valign': 'top',
           label: 'data(label)',
           width: 30,
           height: 30,
           shape: 'ellipse',
           'font-family': 'Helvetica',
-          'font-size': 14,
-          'min-zoomed-font-size': 10,
+          'font-size': 12,
+          'min-zoomed-font-size': 12,
+        },
+      },
+      {
+        selector: 'node[tag = "Program"]',
+        style: {
+          'font-size': 36,
+          'min-zoomed-font-size': 32,
+        },
+      },
+      {
+        selector: 'node[tag = "Requirement"]',
+        style: {
+          'font-size': 24,
+        },
+      },
+      {
+        selector: 'node[tag = "Course"]',
+        style: {
+          'text-valign': 'bottom',
         },
       },
       {
         selector: 'edge',
         style: {
           width: 1,
-          // 'curve-style': 'bezier',
           'line-color': '#B3B3B3',
           'target-arrow-color': '#3A52E2',
           'target-arrow-shape': 'triangle',

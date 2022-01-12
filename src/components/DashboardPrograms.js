@@ -23,17 +23,17 @@ const QUERY_GET_PROGRAMS = gql`
   }
 `
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     display: 'flex',
-//   },
-//   paper: {
-//     padding: theme.spacing(2),
-//     display: 'flex',
-//     overflow: 'auto',
-//     flexDirection: 'column',
-//   },
-// }))
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  paper: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+  },
+}))
 
 const getUniquePrograms = (programs) => {
   let obj = {}
@@ -55,7 +55,7 @@ export default function DashboardPrograms() {
   const dispatch = useDispatch()
   const [clearSelected, setClearSelected] = useState(false)
   const theme = useTheme()
-  // const fixedHeightPaper = clsx(useStyles(theme).paper)
+  const fixedHeightPaper = clsx(useStyles(theme).paper)
 
   const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
   if (error) return <p>Error</p>
@@ -80,32 +80,32 @@ export default function DashboardPrograms() {
 
   return (
     <React.Fragment>
-      {/*<Container>*/}
-      {/*  <Paper className={fixedHeightPaper}>*/}
-      <Autocomplete
-        disablePortal
-        options={programs}
-        getOptionLabel={(option) => `${option.name} - ${option.id}`}
-        sx={{ width: 400 }}
-        renderInput={(params) => {
-          return (
-            <TextField
-              {...params}
-              label={
-                selectedProgram && selectedProgram.length > 0
-                  ? `${selectedProgram[0].name} - ${programId}`
-                  : 'Program'
-              }
-            />
-          )
-        }}
-        onChange={updateContext}
-        onClose={updateContext}
-      />
-      <ProgramGraph />
-      <CourseTable clearSelected={clearSelected} />
-      {/*  </Paper>*/}
-      {/*</Container>*/}
+      <Container>
+        <Paper className={fixedHeightPaper}>
+          <Autocomplete
+            disablePortal
+            options={programs}
+            getOptionLabel={(option) => `${option.name} - ${option.id}`}
+            sx={{ width: 400 }}
+            renderInput={(params) => {
+              return (
+                <TextField
+                  {...params}
+                  label={
+                    selectedProgram && selectedProgram.length > 0
+                      ? `${selectedProgram[0].name} - ${programId}`
+                      : 'Program'
+                  }
+                />
+              )
+            }}
+            onChange={updateContext}
+            onClose={updateContext}
+          />
+          <ProgramGraph />
+          <CourseTable clearSelected={clearSelected} />
+        </Paper>
+      </Container>
     </React.Fragment>
   )
 }
