@@ -84,16 +84,7 @@ export default function DashboardPrograms() {
             getOptionLabel={(option) => `${option.name} - ${option.id}`}
             sx={{ width: 400 }}
             renderInput={(params) => {
-              return (
-                <TextField
-                  {...params}
-                  label={
-                    selectedProgram && selectedProgram.length > 0
-                      ? `${selectedProgram[0].name} - ${programId}`
-                      : 'Program'
-                  }
-                />
-              )
+              return <TextField {...params} label="Program" />
             }}
             onChange={updateContext}
             onClose={updateContext}
