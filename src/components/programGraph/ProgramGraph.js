@@ -10,7 +10,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CircularProgress } from '@material-ui/core'
 import cytoscape from 'cytoscape'
 import klay from 'cytoscape-klay'
+import popper from 'cytoscape-popper'
+import tippy from 'tippy.js'
 
+cytoscape.use(popper)
 cytoscape.use(klay)
 
 const neo4j = require('neo4j-driver')
@@ -55,6 +58,7 @@ export default function ProgramGraph(props) {
   )
   const dispatch = useDispatch()
   const cyRef = useRef()
+  const popper = useRef()
   const selectedCourses = useSelector((state) =>
     state.selections.selectedCourses ? state.selections.selectedCourses : []
   )
@@ -255,14 +259,37 @@ export default function ProgramGraph(props) {
     })
     cyRef.current = cy
 
+    // NOTE: this is on hold because currently there is no way to change the checkbox of the table
     // const handleNodeClick = (node) => {
     //   if (node._private.data.tag && node._private.data.tag === 'Course') {
     //     console.log(node)
-    //     // NOTE: this is on hold because currently there is no way to change the checkbox of the table
     //     // dispatch(toggleCourse(node.id()))
     //   }
     // }
     // cy.on('tapstart', 'node', (evt) => handleNodeClick(evt.target))
+
+    // create hover popup for requirements
+    cy.on('mouseover', 'node[tag = "Requirement"]', (evt) => {
+      popper.current = evt.target.popper({
+        content: () => {
+          let div = document.createElement('div')
+          div.classList.add('popper')
+          div.innerHTML = evt.target._private.data.description
+          document.body.appendChild(div)
+          return div
+        },
+      })
+
+      let update = () => {
+        popper.current.update()
+      }
+      evt.target.on('drag', update)
+      cy.on('pan zoom resize', update)
+    })
+
+    cy.on('mouseout', 'node[tag = "Requirement"]', (evt) => {
+      if (popper.current) popper.current.destroy()
+    })
   }, [cytoscapeDataset])
 
   if (!(cytoscapeDataset && style && layout)) return <CircularProgress />

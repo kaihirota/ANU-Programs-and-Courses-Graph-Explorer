@@ -383,3 +383,16 @@ ul > li {
     width: 100%;
     height: 70vh;
 }
+
+.popper {
+    background-color: #e1bee7;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: sans-serif;
+    opacity: var(--hover-opacity);
+    text-decoration-color: #222222;
+    max-width: 250px;
+    min-width: 50px;
+    overflow-wrap: break-word;
+    padding: 0.5em;
+}
