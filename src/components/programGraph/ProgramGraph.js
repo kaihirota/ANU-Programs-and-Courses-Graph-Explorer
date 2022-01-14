@@ -136,6 +136,7 @@ export default function ProgramGraph(props) {
     }, // Edges with a non-nil value are skipped when greedy edge cycle breaking is enabled
   })
 
+  // set dataset
   useEffect(() => {
     if (programId !== '') {
       const session = driver.session({ defaultAccessMode: neo4j.session.READ })
@@ -152,12 +153,11 @@ export default function ProgramGraph(props) {
     }
   }, [programId])
 
+  // transform dataset
   useEffect(() => {
     const { nodes, edges, tags } = dataset
     let newDataset = []
 
-    // TODO: use stylesheet instead of using style parameter to style nodes
-    // TODO: use selector
     if (nodes) {
       try {
         nodes.forEach((node) => {
@@ -168,10 +168,8 @@ export default function ProgramGraph(props) {
           newDataset.push({
             data: data,
             classes: [node.tag],
-            // style: {'background-color': node.color},
           })
         })
-        // setLayout({ ...layout, roots: [nodes[0].key] })
       } catch (e) {
         // console.log(e)
       }
@@ -190,6 +188,7 @@ export default function ProgramGraph(props) {
     setCytoscapeDataset(newDataset)
   }, [dataset])
 
+  // set style when data is ready
   useEffect(() => {
     const style = [
       {
@@ -251,6 +250,7 @@ export default function ProgramGraph(props) {
     if (cyRef.current) cyRef.current.style(style).update()
   }, [cytoscapeDataset, selectedCourses])
 
+  // render graph
   useEffect(() => {
     let cy = cytoscape({
       container: document.getElementById('cy'), // container to render in
