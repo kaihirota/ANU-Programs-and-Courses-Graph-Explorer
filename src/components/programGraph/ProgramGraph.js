@@ -7,13 +7,14 @@ import {
   NEO4J_USER,
 } from '../../utils'
 import { useDispatch, useSelector } from 'react-redux'
-import { CircularProgress } from '@material-ui/core'
+import { Button, CircularProgress } from '@material-ui/core'
 import cytoscape from 'cytoscape'
 import klay from 'cytoscape-klay'
 import popper from 'cytoscape-popper'
 import tippy from 'tippy.js'
 import 'tippy.js/themes/light.css'
 import Graph from 'graphology'
+import { makeStyles } from '@material-ui/core/styles'
 
 cytoscape.use(popper)
 cytoscape.use(klay)
@@ -53,8 +54,7 @@ const extractNode = (node) => {
   return extracted
 }
 
-export default function ProgramGraph(props) {
-  const { children } = props
+export default function ProgramGraph() {
   const programId = useSelector((state) =>
     state.selections.programId ? state.selections.programId : ''
   )
@@ -70,16 +70,17 @@ export default function ProgramGraph(props) {
   })
   const [cytoscapeDataset, setCytoscapeDataset] = useState([])
   const [style, setStyle] = useState([])
+  const [reload, setReload] = useState(false)
   const [layout, setLayout] = useState({
     name: 'klay',
     nodeDimensionsIncludeLabels: false, // Boolean which changes whether label dimensions are included when calculating node dimensions
     fit: true, // Whether to fit
     padding: 20, // Padding on fit
-    animate: true, // Whether to transition the node positions
-    animateFilter: function (node, i) {
-      return true
-    }, // Whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
-    animationDuration: 500, // Duration of animation in ms if enabled
+    // animate: true, // Whether to transition the node positions
+    // animateFilter: function (node, i) {
+    //   return true
+    // }, // Whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
+    // animationDuration: 500, // Duration of animation in ms if enabled
     animationEasing: undefined, // Easing of animation if enabled
     transform: function (node, pos) {
       return pos
@@ -299,7 +300,8 @@ export default function ProgramGraph(props) {
       })
     }
     setCytoscapeDataset(newDataset)
-  }, [dataset])
+    setReload(false)
+  }, [dataset, reload])
 
   // render graph
   useEffect(() => {
@@ -344,10 +346,19 @@ export default function ProgramGraph(props) {
     })
   }, [cytoscapeDataset])
 
+  const handleClick = (e) => {
+    setReload(true)
+  }
+
   if (!(cytoscapeDataset && style && layout)) return <CircularProgress />
 
   return (
     <>
+      <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+        <Button size="small" onClick={handleClick}>
+          Update Units
+        </Button>
+      </div>
       <div id={'cy'} />
     </>
   )
