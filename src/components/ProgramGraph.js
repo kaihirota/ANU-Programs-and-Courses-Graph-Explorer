@@ -24,11 +24,10 @@ const CYPHER_QUERY =
   'MATCH p=(:Program {id: $program_id})-[r:REQUIREMENT*1..]->() RETURN p'
 
 const COLORMAP = {
-  Program: '#5454FF',
-  Specialisation: '#AA47FF',
-  Requirement: '#FFBC47',
-  Course: '#FF5454',
-  Complete: '#54FF54',
+  Program: '#d81b60',
+  Specialisation: '#8e24aa',
+  Requirement: '#fdd835',
+  Course: '#1e88e5',
 }
 
 const extractNode = (node) => {
@@ -140,13 +139,24 @@ export default function ProgramGraph() {
     if (root !== '') {
       if (!graph.hasNode(root)) return null
       const attributes = graph.getNodeAttributes(root)
+
       if (attributes.tag === 'Course' && selectedCourses.includes(root)) {
-        graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
+        graph.setNodeAttribute(root, 'completed', true)
         units = attributes.units
       } else {
-        graph.forEachOutNeighbor(root, (neighbor) => {
-          units += DFS(graph, neighbor)
-        })
+        // program, specialisation, requirement nodes
+        if (graph.outNeighbors(root).length > 50) {
+          // if more than 50 direct children, don't recurse, just count classes taken
+          graph.forEachOutNeighbor(root, (neighbor) => {
+            if (selectedCourses.includes(neighbor))
+              units += graph.getNodeAttribute(neighbor, 'units')
+          })
+        } else {
+          graph.forEachOutNeighbor(root, (neighbor) => {
+            units += DFS(graph, neighbor)
+          })
+        }
+        // update node labels for requirements given selectedCourses
         if (attributes.tag === 'Requirement') {
           if (attributes.units) {
             graph.setNodeAttribute(
@@ -155,20 +165,20 @@ export default function ProgramGraph() {
               `${units}/${attributes.units}`
             )
 
-            if (units >= attributes.units) {
-              graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
-            }
+            if (units >= attributes.units)
+              graph.setNodeAttribute(root, 'completed', true)
           } else {
             graph.setNodeAttribute(root, 'label', attributes.description)
-            graph.forEachOutNeighbor(root, (neighbor, neighborAttributes) => {
-              if (
-                neighborAttributes.color &&
-                neighborAttributes.color === COLORMAP.Complete
-              ) {
-                graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
-                graph.setNodeAttribute(root, 'units', neighborAttributes.units)
-              }
-            })
+            // edge case: "Either:"
+            // graph.forEachOutNeighbor(root, (neighbor, neighborAttributes) => {
+            //   if (
+            //     neighborAttributes.color &&
+            //     neighborAttributes.color === COLORMAP.Complete
+            //   ) {
+            //     graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
+            //     graph.setNodeAttribute(root, 'units', neighborAttributes.units)
+            //   }
+            // })
           }
         }
       }
@@ -199,15 +209,16 @@ export default function ProgramGraph() {
       {
         selector: 'node',
         style: {
+          'overlay-opacity': 0,
           'background-color': (el) =>
-            selectedCourses.includes(el.attr('id'))
-              ? COLORMAP.Complete
+            selectedCourses.includes(el.attr('id')) ||
+            el.attr('completed') === true
+              ? '#43a047'
               : COLORMAP[el.attr('tag')],
           'background-height': '40%',
           'background-width': '40%',
           'border-color': '#fff',
-          'border-width': '5%',
-          'overlay-opacity': 0,
+          'border-width': '7%',
           'text-valign': 'top',
           label: 'data(label)',
           width: 30,
@@ -253,6 +264,7 @@ export default function ProgramGraph() {
     ]
     setStyle(style)
     if (cyRef.current) cyRef.current.style(style).update()
+    console.log(selectedCourses)
   }, [dataset, selectedCourses])
 
   // transform dataset and load into graph
@@ -263,6 +275,7 @@ export default function ProgramGraph() {
     if (nodes.length > 500) {
       setOverflow(true)
     } else {
+      console.log(`${nodes.length} nodes retrieved`)
       setOverflow(false)
       nodes.forEach((node) => {
         try {
@@ -270,9 +283,6 @@ export default function ProgramGraph() {
         } catch (e) {
           // do nothing
         }
-      })
-      graph.forEachNode((node, attributes) => {
-        graph.setNodeAttribute(node, 'color', COLORMAP[attributes.tag])
       })
       edges.forEach((edge) => graph.addEdge(edge.from, edge.to, edge))
 
