@@ -13,6 +13,7 @@ import klay from 'cytoscape-klay'
 import popper from 'cytoscape-popper'
 import tippy from 'tippy.js'
 import 'tippy.js/themes/light.css'
+import Graph from 'graphology'
 
 cytoscape.use(popper)
 cytoscape.use(klay)
@@ -59,7 +60,6 @@ export default function ProgramGraph(props) {
   )
   const dispatch = useDispatch()
   const cyRef = useRef()
-  const popper = useRef()
   const selectedCourses = useSelector((state) =>
     state.selections.selectedCourses ? state.selections.selectedCourses : []
   )
@@ -136,6 +136,49 @@ export default function ProgramGraph(props) {
     }, // Edges with a non-nil value are skipped when greedy edge cycle breaking is enabled
   })
 
+  const DFS = (graph, root) => {
+    // if req / specialisation, filter for outgoing neighbors that are in completed and sum units
+
+    let units = 0
+    if (root !== '') {
+      if (!graph.hasNode(root)) return null
+      const attributes = graph.getNodeAttributes(root)
+      if (attributes.tag === 'Course' && selectedCourses.includes(root)) {
+        graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
+        units = attributes.units
+      } else {
+        graph.forEachOutNeighbor(root, (neighbor) => {
+          units += DFS(graph, neighbor)
+        })
+        if (attributes.tag === 'Requirement') {
+          if (attributes.units) {
+            graph.setNodeAttribute(
+              root,
+              'label',
+              `${units}/${attributes.units}`
+            )
+
+            if (units >= attributes.units) {
+              graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
+            }
+          } else {
+            graph.setNodeAttribute(root, 'label', attributes.description)
+            graph.forEachOutNeighbor(root, (neighbor, neighborAttributes) => {
+              if (
+                neighborAttributes.color &&
+                neighborAttributes.color === COLORMAP.Complete
+              ) {
+                graph.setNodeAttribute(root, 'color', COLORMAP.Complete)
+                graph.setNodeAttribute(root, 'units', neighborAttributes.units)
+              }
+            })
+          }
+        }
+      }
+    }
+    return units
+  }
+
   // set dataset
   useEffect(() => {
     if (programId !== '') {
@@ -153,42 +196,7 @@ export default function ProgramGraph(props) {
     }
   }, [programId])
 
-  // transform dataset
-  useEffect(() => {
-    const { nodes, edges, tags } = dataset
-    let newDataset = []
-
-    if (nodes) {
-      try {
-        nodes.forEach((node) => {
-          let data = { ...node }
-          if (!data.label && data.description) {
-            data.label = data.description
-          }
-          newDataset.push({
-            data: data,
-            classes: [node.tag],
-          })
-        })
-      } catch (e) {
-        // console.log(e)
-      }
-    }
-    if (edges) {
-      edges.forEach((edge) => {
-        newDataset.push({
-          data: {
-            source: edge.from,
-            target: edge.to,
-            label: edge.label,
-          },
-        })
-      })
-    }
-    setCytoscapeDataset(newDataset)
-  }, [dataset])
-
-  // set style when data is ready
+  // set style
   useEffect(() => {
     const style = [
       {
@@ -248,7 +256,50 @@ export default function ProgramGraph(props) {
     ]
     setStyle(style)
     if (cyRef.current) cyRef.current.style(style).update()
-  }, [cytoscapeDataset, selectedCourses])
+  }, [dataset, selectedCourses])
+
+  // transform dataset and load into graph
+  useEffect(() => {
+    const { nodes, edges } = dataset
+    let newDataset = []
+    const graph = new Graph({ type: 'directed', multi: true })
+    nodes.forEach((node) => {
+      try {
+        graph.addNode(node.id, node)
+      } catch (e) {
+        // do nothing
+      }
+    })
+    graph.forEachNode((node, attributes) => {
+      graph.setNodeAttribute(node, 'color', COLORMAP[attributes.tag])
+    })
+    edges.forEach((edge) => graph.addEdge(edge.from, edge.to, edge))
+
+    DFS(graph, programId)
+
+    if (nodes) {
+      graph.forEachNode((node, attributes) => {
+        newDataset.push({
+          data: {
+            ...attributes,
+          },
+          classes: [attributes.tag],
+        })
+      })
+    }
+    if (edges) {
+      graph.forEachEdge((edge, attr) => {
+        newDataset.push({
+          data: {
+            source: attr.from,
+            target: attr.to,
+            label: attr.label,
+          },
+        })
+      })
+    }
+    setCytoscapeDataset(newDataset)
+  }, [dataset])
 
   // render graph
   useEffect(() => {
@@ -297,12 +348,6 @@ export default function ProgramGraph(props) {
 
   return (
     <>
-      {/*<CytoscapeComponent*/}
-      {/*  elements={cytoscapeDataset}*/}
-      {/*  stylesheet={style}*/}
-      {/*  layout={layout}*/}
-      {/*  style={{ width: '100%', height: '50vh' }}*/}
-      {/*/>*/}
       <div id={'cy'} />
     </>
   )
