@@ -12,6 +12,7 @@ import cytoscape from 'cytoscape'
 import klay from 'cytoscape-klay'
 import popper from 'cytoscape-popper'
 import tippy from 'tippy.js'
+import 'tippy.js/themes/light.css'
 
 cytoscape.use(popper)
 cytoscape.use(klay)
@@ -270,25 +271,25 @@ export default function ProgramGraph(props) {
 
     // create hover popup for requirements
     cy.on('mouseover', 'node[tag = "Requirement"]', (evt) => {
-      popper.current = evt.target.popper({
+      const popper = evt.target.popperRef()
+      const div = document.createElement('div')
+      const tip = new tippy(div, {
+        getReferenceClientRect: popper.getBoundingClientRect, // https://atomiks.github.io/tippyjs/v6/all-props/#getreferenceclientrect
+        trigger: 'manual', // mandatory, we cause the tippy to show programmatically.
+        // content prop can be used when the target is a single element https://atomiks.github.io/tippyjs/v6/constructor/#prop
         content: () => {
-          let div = document.createElement('div')
           div.classList.add('popper')
           div.innerHTML = evt.target._private.data.description
           document.body.appendChild(div)
           return div
         },
+        placement: 'right',
+        offset: [0, 15],
       })
-
-      let update = () => {
-        popper.current.update()
-      }
-      evt.target.on('drag', update)
-      cy.on('pan zoom resize', update)
-    })
-
-    cy.on('mouseout', 'node[tag = "Requirement"]', (evt) => {
-      if (popper.current) popper.current.destroy()
+      tip.show()
+      evt.target.on('mouseout', () => {
+        tip.hide()
+      })
     })
   }, [cytoscapeDataset])
 

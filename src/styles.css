@@ -385,12 +385,11 @@ ul > li {
 }
 
 .popper {
-    background-color: #e1bee7;
-    border-radius: 5px;
+    background-color: #880e4f;
+    color: #DDDDDD;
     font-size: 12px;
     font-family: sans-serif;
-    opacity: var(--hover-opacity);
-    text-decoration-color: #222222;
+    border-radius: 5px;
     max-width: 250px;
     min-width: 50px;
     overflow-wrap: break-word;
