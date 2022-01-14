@@ -78,20 +78,24 @@ const getTags = (nodes) => {
 
 export const extractDataset = (records, extractNode) => {
   let nodesMap = {}
-  const edges = records.flatMap((item) =>
-    item.get('p').segments.map((segment) => {
+  let edgeMap = {}
+  records.flatMap((item) => {
+    item.get('p').segments.forEach((segment) => {
       const edge = extractLink(segment)
       nodesMap[segment.start] = extractNode(segment.start)
       nodesMap[segment.end] = extractNode(segment.end)
-      return edge
+      edge.id = segment.relationship.identity.low
+      edgeMap[edge.id] = edge
     })
-  )
+  })
   const nodes = Object.keys(nodesMap).map((id) => nodesMap[id])
   for (const subject in nodes) {
     if (nodes[subject].units) {
       nodes[subject].units = nodes[subject].units.low
     }
   }
+  const edges = Object.keys(edgeMap).map((id) => edgeMap[id])
+  console.log(edges)
   const tags = getTags(nodes)
   return {
     nodes: nodes,

@@ -21,7 +21,7 @@ const driver = neo4j.driver(
 )
 
 const CYPHER_QUERY =
-  'MATCH p=(:Program {id: $program_id})-[r:REQUIREMENT*1..]->() RETURN p'
+  'MATCH p=(:Program {id: $program_id})-[r:REQUIREMENT*1..]->() RETURN DISTINCT p'
 
 const COLORMAP = {
   Program: '#d81b60',
@@ -218,7 +218,7 @@ export default function ProgramGraph() {
           'background-height': '40%',
           'background-width': '40%',
           'border-color': '#fff',
-          'border-width': '7%',
+          'border-width': '5%',
           'text-valign': 'top',
           label: 'data(label)',
           width: 30,
@@ -256,15 +256,13 @@ export default function ProgramGraph() {
         style: {
           width: 1,
           'line-color': '#B3B3B3',
-          'target-arrow-color': '#3A52E2',
+          'target-arrow-color': '#FF5454',
           'target-arrow-shape': 'triangle',
-          'overlay-opacity': 0,
         },
       },
     ]
     setStyle(style)
     if (cyRef.current) cyRef.current.style(style).update()
-    console.log(selectedCourses)
   }, [dataset, selectedCourses])
 
   // transform dataset and load into graph
