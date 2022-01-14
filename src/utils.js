@@ -95,7 +95,6 @@ export const extractDataset = (records, extractNode) => {
     }
   }
   const edges = Object.keys(edgeMap).map((id) => edgeMap[id])
-  console.log(edges)
   const tags = getTags(nodes)
   return {
     nodes: nodes,
