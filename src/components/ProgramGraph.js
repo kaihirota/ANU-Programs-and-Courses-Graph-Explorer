@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import '../graph.css'
-import {
-  extractDataset,
-  NEO4J_PASSWORD,
-  NEO4J_URI,
-  NEO4J_USER,
-} from '../../utils'
+import './graph.css'
+import { extractDataset, NEO4J_PASSWORD, NEO4J_URI, NEO4J_USER } from '../utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, CircularProgress } from '@material-ui/core'
 import cytoscape from 'cytoscape'
@@ -14,7 +9,7 @@ import popper from 'cytoscape-popper'
 import tippy from 'tippy.js'
 import 'tippy.js/themes/light.css'
 import Graph from 'graphology'
-import { makeStyles } from '@material-ui/core/styles'
+import { Typography } from '@mui/material'
 
 cytoscape.use(popper)
 cytoscape.use(klay)
@@ -71,6 +66,7 @@ export default function ProgramGraph() {
   const [cytoscapeDataset, setCytoscapeDataset] = useState([])
   const [style, setStyle] = useState([])
   const [reload, setReload] = useState(false)
+  const [overflow, setOverflow] = useState(false)
   const [layout, setLayout] = useState({
     name: 'klay',
     nodeDimensionsIncludeLabels: false, // Boolean which changes whether label dimensions are included when calculating node dimensions
@@ -264,41 +260,42 @@ export default function ProgramGraph() {
     const { nodes, edges } = dataset
     let newDataset = []
     const graph = new Graph({ type: 'directed', multi: true })
-    nodes.forEach((node) => {
-      try {
-        graph.addNode(node.id, node)
-      } catch (e) {
-        // do nothing
-      }
-    })
-    graph.forEachNode((node, attributes) => {
-      graph.setNodeAttribute(node, 'color', COLORMAP[attributes.tag])
-    })
-    edges.forEach((edge) => graph.addEdge(edge.from, edge.to, edge))
-
-    DFS(graph, programId)
-
-    if (nodes) {
+    if (nodes.length > 500) {
+      setOverflow(true)
+    } else {
+      setOverflow(false)
+      nodes.forEach((node) => {
+        try {
+          graph.addNode(node.id, node)
+        } catch (e) {
+          // do nothing
+        }
+      })
       graph.forEachNode((node, attributes) => {
-        newDataset.push({
-          data: {
-            ...attributes,
-          },
-          classes: [attributes.tag],
-        })
+        graph.setNodeAttribute(node, 'color', COLORMAP[attributes.tag])
       })
+      edges.forEach((edge) => graph.addEdge(edge.from, edge.to, edge))
+
+      DFS(graph, programId)
     }
-    if (edges) {
-      graph.forEachEdge((edge, attr) => {
-        newDataset.push({
-          data: {
-            source: attr.from,
-            target: attr.to,
-            label: attr.label,
-          },
-        })
+
+    graph.forEachNode((node, attributes) => {
+      newDataset.push({
+        data: {
+          ...attributes,
+        },
+        classes: [attributes.tag],
       })
-    }
+    })
+    graph.forEachEdge((edge, attributes) => {
+      newDataset.push({
+        data: {
+          source: attributes.from,
+          target: attributes.to,
+          label: attributes.label,
+        },
+      })
+    })
     setCytoscapeDataset(newDataset)
     setReload(false)
   }, [dataset, reload])
@@ -354,11 +351,18 @@ export default function ProgramGraph() {
 
   return (
     <>
-      <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-        <Button size="small" onClick={handleClick}>
-          Update Units
-        </Button>
-      </div>
+      {overflow && (
+        <Typography variant="p">
+          Sorry, the program you selected is not supported yet.
+        </Typography>
+      )}
+      {overflow || (
+        <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+          <Button size="small" onClick={handleClick}>
+            Update Units
+          </Button>
+        </div>
+      )}
       <div id={'cy'} />
     </>
   )

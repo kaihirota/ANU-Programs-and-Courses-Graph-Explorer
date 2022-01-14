@@ -4,7 +4,7 @@ import { Container, Paper, TextField } from '@material-ui/core'
 import clsx from 'clsx'
 
 import CourseTable from './CourseTable'
-import ProgramGraph from './programGraph/ProgramGraph'
+import ProgramGraph from './ProgramGraph'
 import { gql, useQuery } from '@apollo/client'
 import { Autocomplete } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
