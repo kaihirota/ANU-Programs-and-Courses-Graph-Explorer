@@ -1,12 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { gql, useLazyQuery } from '@apollo/client'
-
-import { getUniqueClassesSorted } from '../utils'
+import React, { useEffect } from 'react'
 import { Checkbox } from '@material-ui/core'
 import DataTable from 'react-data-table-component'
 import PropTypes from 'prop-types'
-import { useDispatch, useSelector } from 'react-redux'
-import { setSelectedCourses, toggleCourse } from '../selections'
+import { useDispatch } from 'react-redux'
+import { setSelectedCourses } from '../selections'
 
 const columns = [
   {
@@ -42,46 +39,20 @@ const columns = [
   },
 ]
 
-const QUERY_PROGRAM_CLASSES = gql`
-  query programs($id: ID!) {
-    programs(where: { id: $id }) {
-      classes {
-        id
-        name
-        units
-        academic_career
-        college
-        course_convener
-        description
-      }
-    }
-  }
-`
-
 export default function CourseTable(props) {
-  const { clearSelected } = props
-  const programId = useSelector((state) =>
-    state.selections ? state.selections.programId : ''
-  )
-  const selectedCourses = useSelector((state) =>
-    state.selections ? state.selections.selectedCourses : []
-  )
+  const { dataset, clearSelected } = props
   const dispatch = useDispatch()
-  const [getClasses, { data, error, loading }] = useLazyQuery(
-    QUERY_PROGRAM_CLASSES
-  )
-  const [classes, setClasses] = useState([])
+  // const programId = useSelector((state) =>
+  //   state.selections ? state.selections.programId : ''
+  // )
+  // const selectedCourses = useSelector((state) =>
+  //   state.selections ? state.selections.selectedCourses : []
+  // )
   const ExpandedComponent = ({ data }) => <p>{data.description}</p>
 
-  useEffect(async () => {
-    await getClasses({ variables: { id: programId } })
-  }, [programId])
-
   useEffect(() => {
-    if (data && data.programs && data.programs.length > 0) {
-      setClasses(getUniqueClassesSorted(data.programs[0].classes))
-    }
-  }, [data])
+    console.log(dataset)
+  }, [dataset])
 
   const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
     dispatch(setSelectedCourses(selectedRows.map((cls) => cls.id)))
@@ -91,19 +62,22 @@ export default function CourseTable(props) {
     <DataTable
       title="Courses"
       columns={columns}
-      data={classes}
+      data={dataset.nodes.filter((node) => node.tag === 'Course')}
       expandableRows
       expandableRowsComponent={ExpandedComponent}
       selectableRows
       selectableRowsComponent={Checkbox}
       pagination
       onSelectedRowsChange={handleChange}
-      progressPending={loading}
       clearSelectedRows={clearSelected}
     />
   )
 }
 
 CourseTable.propTypes = {
+  dataset: PropTypes.shape({
+    nodes: PropTypes.array.isRequired,
+    edges: PropTypes.array.isRequired,
+  }).isRequired,
   clearSelected: PropTypes.bool.isRequired,
 }
