@@ -240,6 +240,7 @@ export default function ProgramGraph(props) {
     }
 
     graph.forEachNode((node, attributes) => {
+      console.log(attributes)
       newDataset.push({
         data: {
           ...attributes,
