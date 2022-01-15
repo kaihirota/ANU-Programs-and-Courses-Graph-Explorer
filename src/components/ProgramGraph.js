@@ -35,6 +35,7 @@ export default function ProgramGraph(props) {
   const [style, setStyle] = useState([])
   const [reload, setReload] = useState(false)
   const [overflow, setOverflow] = useState(false)
+  const [clickedNode, setClickedNode] = useState('')
   const [layout, setLayout] = useState({
     name: 'klay',
     nodeDimensionsIncludeLabels: false, // Boolean which changes whether label dimensions are included when calculating node dimensions
@@ -206,16 +207,22 @@ export default function ProgramGraph(props) {
       {
         selector: 'edge',
         style: {
-          width: 1,
+          width: 2,
           'line-color': '#B3B3B3',
           'target-arrow-color': '#FF5454',
           'target-arrow-shape': 'triangle',
         },
       },
+      {
+        selector: `edge[source = "${clickedNode}"]`,
+        style: {
+          'line-color': '#FF5454',
+        },
+      },
     ]
     setStyle(style)
     if (cyRef.current) cyRef.current.style(style).update()
-  }, [dataset, selectedCourses])
+  }, [dataset, selectedCourses, clickedNode])
 
   // transform dataset and load into graph
   useEffect(() => {
@@ -240,7 +247,6 @@ export default function ProgramGraph(props) {
     }
 
     graph.forEachNode((node, attributes) => {
-      console.log(attributes)
       newDataset.push({
         data: {
           ...attributes,
@@ -271,14 +277,15 @@ export default function ProgramGraph(props) {
     })
     cyRef.current = cy
 
-    // NOTE: this is on hold because currently there is no way to change the checkbox of the table
-    // const handleNodeClick = (node) => {
-    //   if (node._private.data.tag && node._private.data.tag === 'Course') {
-    //     console.log(node)
-    //     // dispatch(toggleCourse(node.id()))
-    //   }
-    // }
-    // cy.on('tapstart', 'node', (evt) => handleNodeClick(evt.target))
+    // highlight outward edges when node is clicked or tapped
+    cy.on('tapstart', 'node', (evt) =>
+      setClickedNode(evt.target._private.data.id)
+    )
+
+    // reset highlighted edges when clicked on background
+    cy.on('tap', (evt) => {
+      if (!evt.target._private.data.id) setClickedNode('')
+    })
 
     // create hover popup for requirements
     cy.on('mouseover', 'node[tag = "Requirement"]', (evt) => {
