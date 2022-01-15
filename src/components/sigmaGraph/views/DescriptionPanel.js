@@ -62,7 +62,7 @@ const DescriptionContent = (props) => {
           <br />
           {attrs.name}
           <br />
-          {attrs.units.low} units
+          {attrs.units} units
         </p>
         <p>
           Subject: {attrs.subject}

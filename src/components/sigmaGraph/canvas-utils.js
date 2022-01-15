@@ -41,7 +41,7 @@ export function drawHover(
   const nodeId = data.id
   const nodeName = data.name
 
-  const clusterLabel = data.units ? `${data.units.low} units` : ''
+  const clusterLabel = data.units ? `${data.units} units` : ''
 
   // Then we draw the label background
   context.beginPath()
