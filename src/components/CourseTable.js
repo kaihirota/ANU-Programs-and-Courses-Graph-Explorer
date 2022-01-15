@@ -50,10 +50,6 @@ export default function CourseTable(props) {
   // )
   const ExpandedComponent = ({ data }) => <p>{data.description}</p>
 
-  useEffect(() => {
-    console.log(dataset)
-  }, [dataset])
-
   const handleChange = ({ allSelected, selectedCount, selectedRows }) => {
     dispatch(setSelectedCourses(selectedRows.map((cls) => cls.id)))
   }
