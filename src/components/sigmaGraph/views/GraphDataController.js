@@ -81,7 +81,7 @@ const GraphDataController = (props) => {
   // calculate cluster centroids
   useEffect(() => {
     const { nodes, tags } = dataset
-    let newClusters = { ...clusters }
+    let newClusters = {}
     nodes.forEach((node) => {
       if (node.subject in newClusters) {
         newClusters[node.subject].positions.push({ x: node.x, y: node.y })
@@ -109,16 +109,12 @@ const GraphDataController = (props) => {
   useEffect(() => {
     // const container = sigmaContext.container
     const container = document.getElementsByClassName('sigma-container')[0]
-    if (sigmaContext.container) {
-      for (let i = 0; i < container.children.length; i++) {
-        if (container.children[i].id === 'clustersLayer') {
-          container.children[i].remove()
-        }
-      }
-
-      // create the clustersLabel layer
-      const clustersLayer = document.createElement('div')
+    if (container) {
+      let clustersLayer = document.getElementById('clustersLayer')
+      if (clustersLayer) clustersLayer.remove()
+      clustersLayer = document.createElement('div')
       clustersLayer.id = 'clustersLayer'
+
       let clusterLabelsDoms = ''
       for (const subject in clusters) {
         if (filters.tags[subject]) {
@@ -158,7 +154,7 @@ const GraphDataController = (props) => {
         }
       })
     }
-  }, [dataset, clusters, filters])
+  }, [clusters, filters])
 
   /**
    * Apply filters to graphology:

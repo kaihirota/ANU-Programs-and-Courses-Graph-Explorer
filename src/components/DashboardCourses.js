@@ -17,19 +17,19 @@ export default function DashboardCourses() {
   return (
     <React.Fragment>
       <Title>Courses</Title>
-      {/*<FormControl style={{ width: '200px' }}>*/}
-      {/*  <InputLabel id="demo-simple-select-label">Academic Career</InputLabel>*/}
-      {/*  <Select*/}
-      {/*    labelId="demo-simple-select-label"*/}
-      {/*    id="demo-simple-select"*/}
-      {/*    value={academicCareer}*/}
-      {/*    label="Type"*/}
-      {/*    onChange={handleChange}*/}
-      {/*  >*/}
-      {/*    <MenuItem value="UGRD">Undergraduate</MenuItem>*/}
-      {/*    <MenuItem value="PGRD">Postgraduate</MenuItem>*/}
-      {/*  </Select>*/}
-      {/*</FormControl>*/}
+      <FormControl style={{ width: '200px' }}>
+        <InputLabel id="demo-simple-select-label">Academic Career</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={academicCareer}
+          label="Type"
+          onChange={handleChange}
+        >
+          <MenuItem value="UGRD">Undergraduate</MenuItem>
+          <MenuItem value="PGRD">Postgraduate</MenuItem>
+        </Select>
+      </FormControl>
       <div className="graph-container">
         <SigmaContainer
           id="sigma"
