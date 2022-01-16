@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import './graph.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, CircularProgress } from '@material-ui/core'
 import cytoscape from 'cytoscape'
@@ -10,16 +9,10 @@ import 'tippy.js/themes/light.css'
 import Graph from 'graphology'
 import { Typography } from '@mui/material'
 import PropTypes from 'prop-types'
+import { COLORMAP } from '../utils'
 
 cytoscape.use(popper)
 cytoscape.use(klay)
-
-const COLORMAP = {
-  Program: '#d81b60',
-  Specialisation: '#8e24aa',
-  Requirement: '#fdd835',
-  Course: '#1e88e5',
-}
 
 export default function ProgramGraph(props) {
   const { dataset } = props

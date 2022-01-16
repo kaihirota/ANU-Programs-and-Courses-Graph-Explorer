@@ -102,3 +102,10 @@ export const extractDataset = (records, extractNode) => {
     tags: tags,
   }
 }
+
+export const COLORMAP = {
+  Program: '#d81b60',
+  Specialisation: '#8e24aa',
+  Requirement: '#fdd835',
+  Course: '#1e88e5',
+}
