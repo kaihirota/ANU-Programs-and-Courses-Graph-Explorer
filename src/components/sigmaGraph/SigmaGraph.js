@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ZoomControl } from 'react-sigma-v2'
+import { FullScreenControl, ZoomControl } from 'react-sigma-v2'
 import { constant, keyBy, mapValues, omit } from 'lodash'
 
 import GraphSettingsController from './views/GraphSettingsController'
@@ -13,7 +13,12 @@ import TagsPanel from './views/TagsPanel'
 import 'react-sigma-v2/lib/react-sigma-v2.css'
 import { GrClose } from 'react-icons/gr'
 import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi'
-import { BsZoomIn, BsZoomOut } from 'react-icons/bs'
+import {
+  BsArrowsFullscreen,
+  BsFullscreenExit,
+  BsZoomIn,
+  BsZoomOut,
+} from 'react-icons/bs'
 import PropTypes from 'prop-types'
 import { SelectedCourseNodeContext } from '../../contexts'
 import { CircularProgress } from '@material-ui/core'
@@ -116,6 +121,11 @@ const SigmaGraph = (props) => {
               <BiBookContent />
             </button>
           </div>
+          <FullScreenControl
+            className="ico"
+            customEnterFullScreen={<BsArrowsFullscreen />}
+            customExitFullScreen={<BsFullscreenExit />}
+          />
           <ZoomControl
             className="ico"
             customZoomIn={<BsZoomIn />}
