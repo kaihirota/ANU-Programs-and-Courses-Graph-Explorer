@@ -21,9 +21,6 @@ const QUERY_GET_PROGRAMS = gql`
 `
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
   paper: {
     padding: theme.spacing(2),
     display: 'flex',

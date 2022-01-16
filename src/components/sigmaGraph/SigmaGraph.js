@@ -30,9 +30,6 @@ const driver = neo4j.driver(
   NEO4J_URI,
   neo4j.auth.basic(NEO4J_USER, NEO4J_PASSWORD)
 )
-// Close the driver when application exits.
-// This closes all used network connections.
-// await driver.close()
 
 const CYPHER_QUERY =
   'MATCH p=(:Course {academic_career: $academicCareer})-[:PREREQUISITE]->(:Course {academic_career: $academicCareer}) RETURN p'
