@@ -58,7 +58,9 @@ export default function CourseTable(props) {
     <DataTable
       title="Courses"
       columns={columns}
-      data={dataset.nodes.filter((node) => node.tag === 'Course')}
+      data={dataset.nodes
+        .filter((node) => node.tag === 'Course')
+        .sort((a, b) => a.id.localeCompare(b.id))}
       expandableRows
       expandableRowsComponent={ExpandedComponent}
       selectableRows
