@@ -19,7 +19,7 @@ const TagsPanel = (props) => {
       index[tag] = (index[tag] || 0) + 1
     })
     setNodesPerTag(index)
-  }, [])
+  }, [tags])
 
   const maxNodesPerTag = useMemo(
     () => Math.max(...values(nodesPerTag)),
