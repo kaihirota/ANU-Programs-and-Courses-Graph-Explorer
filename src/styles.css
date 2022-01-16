@@ -379,7 +379,7 @@ ul > li {
     opacity: 0.8;
 }
 
-#cy {
+#sigma, #cy {
     width: 100%;
     height: 70vh;
 }

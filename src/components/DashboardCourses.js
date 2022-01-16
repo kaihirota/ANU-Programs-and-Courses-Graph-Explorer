@@ -32,8 +32,8 @@ export default function DashboardCourses() {
       {/*</FormControl>*/}
       <div className="graph-container">
         <SigmaContainer
+          id="sigma"
           graphOptions={{ type: 'directed', multi: true }}
-          style={{ height: '600px', width: '100%' }}
           initialSettings={{
             nodeProgramClasses: { image: getNodeImageProgram() },
             labelRenderer: drawLabel,
