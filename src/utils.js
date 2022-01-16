@@ -34,9 +34,11 @@ export const getUniquePrograms = (programs) => {
     .forEach((program) => {
       obj[program.id] = program
     })
-  return Object.keys(obj).map(function (id) {
-    return obj[id]
-  })
+  return Object.keys(obj)
+    .map(function (id) {
+      return obj[id]
+    })
+    .sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export const extractLink = (segment) => {

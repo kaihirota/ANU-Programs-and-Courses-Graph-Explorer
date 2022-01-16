@@ -9,7 +9,13 @@ import { gql, useQuery } from '@apollo/client'
 import { Autocomplete } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearCourse, setProgram } from '../selections'
-import { extractDataset, NEO4J_PASSWORD, NEO4J_URI, NEO4J_USER } from '../utils'
+import {
+  extractDataset,
+  getUniquePrograms,
+  NEO4J_PASSWORD,
+  NEO4J_URI,
+  NEO4J_USER,
+} from '../utils'
 
 const QUERY_GET_PROGRAMS = gql`
   {
@@ -28,19 +34,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
 }))
-
-const getUniquePrograms = (programs) => {
-  let obj = {}
-  programs
-    .filter((program) => program.id && program.id !== '')
-    .filter((program) => program.name && program.name.trim() !== '')
-    .forEach((program) => {
-      obj[program.id] = program
-    })
-  return Object.keys(obj).map(function (id) {
-    return obj[id]
-  })
-}
 
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
@@ -105,6 +98,7 @@ export default function DashboardPrograms() {
   if (loading) return null
 
   const programs = getUniquePrograms(data.programs)
+  // console.log(programs)
 
   function handleSelection(event, value, reason, details) {
     if (reason === 'selectOption' && value) {
