@@ -70,18 +70,18 @@ const extractNode = (node) => {
 }
 
 export default function DashboardPrograms() {
-  const programId = useSelector((state) =>
-    state.selections.programId ? state.selections.programId : ''
-  )
+  const theme = useTheme()
+  const fixedHeightPaper = clsx(useStyles(theme).paper)
   const dispatch = useDispatch()
+  const programId = useSelector((state) =>
+    state.selections.programId ? state.selections.programId : 'Program'
+  )
   const [clearSelected, setClearSelected] = useState(false)
   const [dataset, setDataset] = useState({
     nodes: [],
     edges: [],
     tags: [],
   })
-  const theme = useTheme()
-  const fixedHeightPaper = clsx(useStyles(theme).paper)
 
   // get classes if program is selected
   useEffect(() => {
@@ -106,13 +106,9 @@ export default function DashboardPrograms() {
 
   const programs = getUniquePrograms(data.programs)
 
-  const updateContext = (e) => {
-    const textContent = e.target.textContent
-      ? e.target.textContent
-      : e.target.value
-    const [selectedProgramName, selectedProgramId] = textContent.split(' - ')
-    if (selectedProgramId && selectedProgramId !== '') {
-      dispatch(setProgram(selectedProgramId))
+  function handleSelection(event, value, reason, details) {
+    if (reason === 'selectOption' && value) {
+      dispatch(setProgram(value.id))
       dispatch(clearCourse())
       setClearSelected(true)
     }
@@ -128,10 +124,9 @@ export default function DashboardPrograms() {
             getOptionLabel={(option) => `${option.name} - ${option.id}`}
             sx={{ width: 400 }}
             renderInput={(params) => {
-              return <TextField {...params} label="Program" />
+              return <TextField {...params} label="Choose a Program" />
             }}
-            onChange={updateContext}
-            onClose={updateContext}
+            onChange={handleSelection}
           />
           <ProgramGraph dataset={dataset} />
           <CourseTable dataset={dataset} clearSelected={clearSelected} />
