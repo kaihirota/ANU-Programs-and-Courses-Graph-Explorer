@@ -1,3 +1,6 @@
+![Website](https://img.shields.io/website?down_color=lightgrey&down_message=Offline&up_color=green&up_message=Online&url=https%3A%2F%2Fanu-graph-vis.vercel.app)
+![Uptime Robot ratio (30 days)](https://img.shields.io/uptimerobot/ratio/m790361423-54fff8072af1658729630e16)
+
 # ANU Programs & Courses Graph Explorer
 
 ![](img/1.jpg)
