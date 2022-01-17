@@ -48,21 +48,29 @@ const SigmaGraph = (props) => {
     tags: {},
   })
 
-  const result = useQuery(academicCareer, async () => {
-    const session = driver.session({ defaultAccessMode: neo4j.session.READ })
-    const result = await session.run(CYPHER_QUERY, {
-      academicCareer: academicCareer,
-    })
-    const extractNode = (node) => {
-      return {
-        ...node.properties,
-        label: `${node.properties.id} ${node.properties.name}`,
-        tag: node.properties.subject,
+  const result = useQuery(
+    academicCareer,
+    async () => {
+      const session = driver.session({ defaultAccessMode: neo4j.session.READ })
+      const result = await session.run(CYPHER_QUERY, {
+        academicCareer: academicCareer,
+      })
+      const extractNode = (node) => {
+        return {
+          ...node.properties,
+          label: `${node.properties.id} ${node.properties.name}`,
+          tag: node.properties.subject,
+        }
       }
-    }
 
-    return extractDataset(result.records, extractNode)
-  })
+      return extractDataset(result.records, extractNode)
+    },
+    {
+      staleTime: Infinity,
+      cacheTime: 1000 * 60 * 60 * 24 /*1 day*/,
+      refetchOnWindowFocus: false,
+    }
+  )
 
   const dataset = result.data
 
