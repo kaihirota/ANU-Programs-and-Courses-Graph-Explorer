@@ -28,7 +28,7 @@ import {
   NEO4J_URI,
   NEO4J_USER,
 } from '../../utils'
-import { useQuery } from 'react-query'
+import { QueryClient, useQuery } from 'react-query'
 
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
@@ -39,6 +39,31 @@ const driver = neo4j.driver(
 const CYPHER_QUERY =
   'MATCH p=(:Course {academic_career: $academicCareer})-[:PREREQUISITE]->(:Course {academic_career: $academicCareer}) RETURN p'
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+      cacheTime: 1000 * 60 * 60 * 24 /*1 day*/,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
+const queryData = async (academicCareer) => {
+  const session = driver.session({ defaultAccessMode: neo4j.session.READ })
+  const result = await session.run(CYPHER_QUERY, {
+    academicCareer: academicCareer,
+  })
+  const extractNode = (node) => {
+    return {
+      ...node.properties,
+      label: `${node.properties.id} ${node.properties.name}`,
+      tag: node.properties.subject,
+    }
+  }
+  return extractDataset(result.records, extractNode)
+}
+
 const SigmaGraph = (props) => {
   const { academicCareer } = props
   const [showContents, setShowContents] = useState(false)
@@ -47,24 +72,11 @@ const SigmaGraph = (props) => {
   const [filtersState, setFiltersState] = useState({
     tags: {},
   })
+  queryClient.prefetchQuery('UGRD', queryData)
 
   const result = useQuery(
     academicCareer,
-    async () => {
-      const session = driver.session({ defaultAccessMode: neo4j.session.READ })
-      const result = await session.run(CYPHER_QUERY, {
-        academicCareer: academicCareer,
-      })
-      const extractNode = (node) => {
-        return {
-          ...node.properties,
-          label: `${node.properties.id} ${node.properties.name}`,
-          tag: node.properties.subject,
-        }
-      }
-
-      return extractDataset(result.records, extractNode)
-    },
+    async () => queryData(academicCareer),
     {
       staleTime: Infinity,
       cacheTime: 1000 * 60 * 60 * 24 /*1 day*/,
