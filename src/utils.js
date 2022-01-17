@@ -49,7 +49,7 @@ export const extractLink = (segment) => {
   }
 }
 
-const getTags = (nodes) => {
+export const getTags = (nodes) => {
   function onlyUnique(value, index, self) {
     return self.indexOf(value) === index
   }

@@ -24,11 +24,11 @@ import { SelectedCourseNodeContext } from '../../contexts'
 import { CircularProgress } from '@material-ui/core'
 import {
   extractDataset,
-  getTags,
   NEO4J_PASSWORD,
   NEO4J_URI,
   NEO4J_USER,
 } from '../../utils'
+import { useQuery } from 'react-query'
 
 const neo4j = require('neo4j-driver')
 const driver = neo4j.driver(
@@ -39,48 +39,41 @@ const driver = neo4j.driver(
 const CYPHER_QUERY =
   'MATCH p=(:Course {academic_career: $academicCareer})-[:PREREQUISITE]->(:Course {academic_career: $academicCareer}) RETURN p'
 
-const extractNode = (node) => {
-  return {
-    ...node.properties,
-    label: `${node.properties.id} ${node.properties.name}`,
-    tag: node.properties.subject,
-  }
-}
-
 const SigmaGraph = (props) => {
   const { academicCareer } = props
   const [showContents, setShowContents] = useState(false)
   const [hoveredNode, setHoveredNode] = useState()
   const [clickedNode, setClickedNode] = useState('')
-  const [dataReady, setDataReady] = useState(false)
   const [filtersState, setFiltersState] = useState({
     tags: {},
   })
-  const [dataset, setDataset] = useState({
-    nodes: [],
-    edges: [],
-    tags: [],
+
+  const result = useQuery(academicCareer, async () => {
+    const session = driver.session({ defaultAccessMode: neo4j.session.READ })
+    const result = await session.run(CYPHER_QUERY, {
+      academicCareer: academicCareer,
+    })
+    const extractNode = (node) => {
+      return {
+        ...node.properties,
+        label: `${node.properties.id} ${node.properties.name}`,
+        tag: node.properties.subject,
+      }
+    }
+
+    return extractDataset(result.records, extractNode)
   })
 
-  useEffect(() => {
-    const session = driver.session({ defaultAccessMode: neo4j.session.READ })
-    session
-      .run(CYPHER_QUERY, { academicCareer: academicCareer })
-      .then((result) => {
-        const dataset = extractDataset(result.records, extractNode)
-        setDataset(dataset)
-        setFiltersState({
-          tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
-        })
-        requestAnimationFrame(() => setDataReady(true))
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-      .then(() => session.close())
-  }, [academicCareer])
+  const dataset = result.data
 
-  if (!dataReady) {
+  useEffect(() => {
+    if (dataset && dataset.tags)
+      setFiltersState({
+        tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
+      })
+  }, [dataset, academicCareer])
+
+  if (result.isLoading) {
     return (
       <CircularProgress style={{ position: 'absolute', top: 1, left: 0 }} />
     )

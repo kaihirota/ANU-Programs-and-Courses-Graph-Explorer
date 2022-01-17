@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Container, Paper, TextField } from '@material-ui/core'
+import {
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+} from '@material-ui/core'
 import clsx from 'clsx'
 
 import CourseTable from './CourseTable'
@@ -16,6 +21,7 @@ import {
   NEO4J_URI,
   NEO4J_USER,
 } from '../utils'
+import { useQuery as useCachedQuery } from 'react-query'
 
 const QUERY_GET_PROGRAMS = gql`
   {
@@ -44,24 +50,6 @@ const driver = neo4j.driver(
 const CYPHER_QUERY =
   'MATCH p=(:Program {id: $program_id})-[r:REQUIREMENT*1..]->() RETURN DISTINCT p'
 
-const extractNode = (node) => {
-  let extracted = {
-    ...node.properties,
-    tag: node.labels[0],
-  }
-
-  if (extracted.tag === 'Requirement' && node.properties.units) {
-    extracted.label = node.properties.units.low
-  } else if (extracted.tag === 'Program') {
-    extracted.label = node.properties.name
-  } else if (extracted.tag === 'Specialisation') {
-    extracted.label = node.properties.name
-  } else if (extracted.tag === 'Course') {
-    extracted.label = `${node.properties.id} - ${node.properties.name}`
-  }
-  return extracted
-}
-
 export default function DashboardPrograms() {
   const theme = useTheme()
   const fixedHeightPaper = clsx(useStyles(theme).paper)
@@ -70,34 +58,47 @@ export default function DashboardPrograms() {
     state.selections.programId ? state.selections.programId : 'Program'
   )
   const [clearSelected, setClearSelected] = useState(false)
-  const [dataset, setDataset] = useState({
-    nodes: [],
-    edges: [],
-    tags: [],
-  })
 
-  // get classes if program is selected
-  useEffect(() => {
-    if (programId !== '') {
-      const session = driver.session({ defaultAccessMode: neo4j.session.READ })
-      session
-        .run(CYPHER_QUERY, { program_id: programId })
-        .then((result) => {
-          const dataset = extractDataset(result.records, extractNode)
-          setDataset(dataset)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .then(() => session.close())
+  const result = useCachedQuery(programId, async () => {
+    const session = driver.session({ defaultAccessMode: neo4j.session.READ })
+
+    const result = await session.run(CYPHER_QUERY, {
+      program_id: programId,
+    })
+    const extractNode = (node) => {
+      let extracted = {
+        ...node.properties,
+        tag: node.labels[0],
+      }
+
+      if (extracted.tag === 'Requirement' && node.properties.units) {
+        extracted.label = node.properties.units.low
+      } else if (extracted.tag === 'Program') {
+        extracted.label = node.properties.name
+      } else if (extracted.tag === 'Specialisation') {
+        extracted.label = node.properties.name
+      } else if (extracted.tag === 'Course') {
+        extracted.label = `${node.properties.id} - ${node.properties.name}`
+      }
+      return extracted
     }
-  }, [programId])
+
+    return extractDataset(result.records, extractNode)
+  })
 
   const { loading, error, data } = useQuery(QUERY_GET_PROGRAMS)
   if (error) return <p>Error</p>
   if (loading) return null
+  if (result.isLoading) {
+    return (
+      <CircularProgress style={{ position: 'absolute', top: 1, left: 0 }} />
+    )
+  }
+  const dataset = result.data
+  console.log(dataset)
 
   const programs = getUniquePrograms(data.programs)
+
   // console.log(programs)
 
   function handleSelection(event, value, reason, details) {
