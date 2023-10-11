@@ -3,7 +3,12 @@
 
 # ANU Programs & Courses Graph Explorer
 
+This is a React based web app with 2 features:
+
+1. Plan / Visualize a degree
 ![](img/1.jpg)
+
+2. Explore courses at ANU 
 ![](img/2.jpg)
 
 Most of the data visualisation code is taken from https://github.com/jacomyal/sigma.js/tree/main/demo
