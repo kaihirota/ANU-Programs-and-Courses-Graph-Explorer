@@ -1,21 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './styles.css'
-import App from './App'
-import registerServiceWorker from './registerServiceWorker'
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_URI || '/graphql',
-  cache: new InMemoryCache(),
-})
+import App from './App'
+import './styles.css'
+import registerServiceWorker from './registerServiceWorker'
 
 const Main = () => {
-  return (
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  )
+  return <App />
 }
 
 ReactDOM.render(<Main />, document.getElementById('root'))

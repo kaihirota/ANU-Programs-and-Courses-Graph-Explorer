@@ -135,8 +135,8 @@ const TagsPanel = (props) => {
 }
 
 TagsPanel.propTypes = {
-  tags: PropTypes.array, // Tag[]
-  filters: PropTypes.object, // filters = FiltersState = { tags: Record<string, boolean> }
+  tags: PropTypes.array,
+  filters: PropTypes.object, // { tags: Map<string, boolean> }
   toggleTag: PropTypes.func, // (tag: string) => void
   setTags: PropTypes.func, // (tags: Record<string, boolean>) => void
 }

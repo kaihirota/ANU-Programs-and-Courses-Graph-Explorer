@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
-import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
-import Title from './Title'
-import '@fortawesome/fontawesome-free/css/all.min.css'
+import { SigmaContainer } from 'react-sigma-v2'
 import 'react-sigma-v2/lib/react-sigma-v2.css'
+import getNodeImageProgram from 'sigma/rendering/webgl/programs/node.image'
+import '@fortawesome/fontawesome-free/css/all.min.css'
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
+
 import '../styles.css'
+import Title from './Title'
 import SigmaGraph from './sigmaGraph/SigmaGraph'
 import drawLabel from './sigmaGraph/canvas-utils'
-import { SigmaContainer } from 'react-sigma-v2'
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 
 export default function DashboardCourses() {
   const [academicCareer, setAcademicCareer] = useState('UGRD')

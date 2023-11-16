@@ -395,3 +395,13 @@ ul > li {
     overflow-wrap: break-word;
     padding: 0.5em;
 }
+
+.dot {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 15px;
+    margin-right: 5px;
+    margin-top: 3px;
+}
