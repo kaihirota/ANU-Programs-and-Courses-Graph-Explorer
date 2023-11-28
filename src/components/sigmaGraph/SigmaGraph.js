@@ -1,4 +1,4 @@
-import { constant, keyBy, mapValues, omit } from 'lodash'
+import { omit } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { FullScreenControl, ZoomControl } from 'react-sigma-v2'
 import 'react-sigma-v2/lib/react-sigma-v2.css'
@@ -11,6 +11,7 @@ import {
   BsZoomOut,
 } from 'react-icons/bs'
 import PropTypes from 'prop-types'
+import { CircularProgress } from '@material-ui/core'
 
 import { SelectedCourseNodeContext } from '../../contexts'
 import GraphSettingsController from './views/GraphSettingsController'
@@ -72,6 +73,12 @@ const SigmaGraph = (props) => {
     if (clusterLayer) {
       clusterLayer.hidden = filters.tags[tag]
     }
+  }
+
+  if (data.nodes.length === 0) {
+    return (
+      <CircularProgress style={{ position: 'absolute', top: 1, left: 0 }} />
+    )
   }
 
   return (
