@@ -37,13 +37,13 @@ const SigmaGraph = (props) => {
       setData({
         nodes: jsonDataUGRD.nodes,
         edges: jsonDataUGRD.edges,
-        tags: jsonDataUGRD.tags,
+        tags: getTags(jsonDataUGRD.tags),
       })
     } else if (academicCareer === 'PGRD') {
       setData({
         nodes: jsonDataPGRD.nodes,
         edges: jsonDataPGRD.edges,
-        tags: jsonDataPGRD.tags,
+        tags: getTags(jsonDataPGRD.tags),
       })
     }
   }
@@ -52,23 +52,21 @@ const SigmaGraph = (props) => {
 
   useEffect(() => {
     if (data.tags && data.tags.length > 0) {
-      setFilters({ tags: mapValues(data.tags, constant(true)) })
+      let newFilters = { tags: {} }
+      data.tags.forEach((tag) => {
+        newFilters.tags[tag.key] = true
+      })
+      setFilters(newFilters)
     }
-  }, [data.tags])
-
-  const setTags = (tags) =>
-    setFilters((filters) => ({
-      ...filters,
-      tags,
-    }))
+  }, [data, academicCareer])
 
   const toggleTag = (tag) => {
-    setFilters((filters) => {
-      if (filters.tags[tag]) {
-        omit(filters.tags, tag)
-      }
-      filters.tags = { ...filters.tags, [tag]: true }
-    })
+    setFilters((filters) => ({
+      ...filters,
+      tags: filters.tags[tag]
+        ? omit(filters.tags, tag)
+        : { ...filters.tags, [tag]: true },
+    }))
 
     let clusterLayer = document.getElementById(tag)
     if (clusterLayer) {
@@ -119,15 +117,21 @@ const SigmaGraph = (props) => {
               <GrClose />
             </button>
           </div>
+
           <GraphTitle filters={filters} />
           <div className="panels">
             <SearchField filters={filters} />
             <DescriptionPanel />
             <TagsPanel
               tags={data.tags}
-              filters={filters}
-              setTags={setTags}
               toggleTag={toggleTag}
+              filters={filters}
+              setFilters={(tags) =>
+                setFilters((filters) => ({
+                  ...filters,
+                  tags,
+                }))
+              }
             />
           </div>
         </div>
@@ -135,12 +139,41 @@ const SigmaGraph = (props) => {
     </SelectedCourseNodeContext.Provider>
   )
 }
+
 SigmaGraph.propTypes = {
   academicCareer: PropTypes.string,
 }
 
 SigmaGraph.defaultProps = {
   academicCareer: 'UGRD',
+}
+
+const getTags = (tags) => {
+  function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index
+  }
+  const uniqueTags = tags.filter(onlyUnique)
+  const colors = [
+    '#ff833a',
+    '#ff6659',
+    '#ff5c8d',
+    '#ae52d4',
+    '#8559da',
+    '#6f74dd',
+    '#63a4ff',
+    '#48a999',
+    '#60ad5e',
+  ]
+
+  // const colors = chroma.scale('Spectral').colors(10)
+  let ret = new Array(uniqueTags.length)
+  for (let i = 0; i < uniqueTags.length; i++) {
+    ret[i] = {
+      key: uniqueTags[i],
+      color: colors[i % colors.length],
+    }
+  }
+  return ret
 }
 
 export default SigmaGraph

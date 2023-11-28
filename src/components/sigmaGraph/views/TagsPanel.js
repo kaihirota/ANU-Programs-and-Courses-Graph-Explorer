@@ -8,11 +8,13 @@ import Panel from './Panel'
 import PropTypes from 'prop-types'
 
 const TagsPanel = (props) => {
-  const { tags, filters, toggleTag, setTags } = props
+  const { tags, toggleTag, setFilters, filters } = props
+  const [nodesPerTag, setNodesPerTag] = useState({})
+  const [visibleNodesPerTag, setVisibleNodesPerTag] = useState(nodesPerTag)
+
   const sigma = useSigma()
   const graph = sigma.getGraph()
 
-  const [nodesPerTag, setNodesPerTag] = useState({})
   useEffect(() => {
     let index = {}
     graph.forEachNode((node, { tag }) => {
@@ -27,10 +29,9 @@ const TagsPanel = (props) => {
   )
   const visibleTagsCount = useMemo(
     () => Object.keys(filters.tags).length,
-    [filters]
+    [filters.tags]
   )
 
-  const [visibleNodesPerTag, setVisibleNodesPerTag] = useState(nodesPerTag)
   useEffect(() => {
     // To ensure the graphology instance has up to data "hidden" values for
     // nodes, we wait for next frame before reindexing. This won't matter in the
@@ -76,11 +77,11 @@ const TagsPanel = (props) => {
       <p className="buttons">
         <button
           className="btn"
-          onClick={() => setTags(mapValues(keyBy(tags, 'key'), () => true))}
+          onClick={() => setFilters(mapValues(keyBy(tags, 'key'), () => true))}
         >
           <AiOutlineCheckCircle /> Check all
         </button>{' '}
-        <button className="btn" onClick={() => setTags({})}>
+        <button className="btn" onClick={() => setFilters({})}>
           <AiOutlineCloseCircle /> Uncheck all
         </button>
       </p>
@@ -135,10 +136,10 @@ const TagsPanel = (props) => {
 }
 
 TagsPanel.propTypes = {
-  tags: PropTypes.array,
-  filters: PropTypes.object, // { tags: Map<string, boolean> }
+  tags: PropTypes.array, // List<{key: string, color: string}>
+  filters: PropTypes.object, // { tags: { subject: boolean }}
   toggleTag: PropTypes.func, // (tag: string) => void
-  setTags: PropTypes.func, // (tags: Record<string, boolean>) => void
+  setFilters: PropTypes.func,
 }
 
 export default TagsPanel

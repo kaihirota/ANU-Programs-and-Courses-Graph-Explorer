@@ -18,13 +18,15 @@ const GraphDataController = (props) => {
   useEffect(() => {
     if (!graph || !dataset) return
 
-    dataset.nodes.forEach((n) => {
+    const { nodes, edges } = dataset
+
+    nodes.forEach((n) => {
       if (n.id && n.name) {
         graph.addNode(n.id, n)
       }
     })
 
-    dataset.edges.forEach((edge) => {
+    edges.forEach((edge) => {
       try {
         graph.addEdge(edge.from, edge.to, { size: 1 })
       } catch (e) {
@@ -49,6 +51,7 @@ const GraphDataController = (props) => {
     const maxDegree = Math.max(...scores)
     const MIN_NODE_SIZE = 3
     const MAX_NODE_SIZE = 30
+
     graph.forEachNode((node) =>
       graph.setNodeAttribute(
         node,
@@ -168,6 +171,7 @@ const GraphDataController = (props) => {
 
   return <>{children}</>
 }
+
 GraphDataController.propTypes = {
   dataset: PropTypes.shape({
     nodes: PropTypes.array.isRequired,
