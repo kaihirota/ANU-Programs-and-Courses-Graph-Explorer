@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useSigma } from 'react-sigma-v2'
 import PropTypes from 'prop-types'
 import { circlepack } from 'graphology-layout'
-import { useSigmaContext } from 'react-sigma-v2/lib/esm/context'
+// import { useSigmaContext } from 'react-sigma-v2/lib/esm/context'
 import chroma from 'chroma-js'
 
 const GraphDataController = (props) => {
   const { dataset, filters, children } = props
   const sigma = useSigma()
   const graph = sigma.getGraph()
-  const sigmaContext = useSigmaContext()
+  // const sigmaContext = useSigmaContext()
   const [clusters, setClusters] = useState({})
 
   /**

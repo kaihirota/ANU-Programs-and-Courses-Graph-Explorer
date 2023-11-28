@@ -24,17 +24,15 @@ import {
   Menu as MenuIcon,
 } from '@material-ui/icons'
 import SchoolIcon from '@material-ui/icons/School'
-import dotenv from 'dotenv'
 import HomeIcon from '@mui/icons-material/Home'
-import GolfCourseIcon from '@material-ui/icons/GolfCourse'
+
 import { Provider } from 'react-redux'
 
 import DashboardCourses from './components/DashboardCourses'
-import DashboardPrograms from './components/DashboardPrograms'
+// import DashboardPrograms from './components/DashboardPrograms'
 import { store } from './store'
 
 // set environment variables from .env
-dotenv.config()
 
 function Footer() {
   return (
